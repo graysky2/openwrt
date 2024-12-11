@@ -1044,14 +1044,9 @@ define KernelPackage/rp1
   KCONFIG:= \
            CONFIG_FIRMWARE_RP1 \
            CONFIG_RP1_PIO \
-           CONFIG_PINCTRL_RP1=y \
-           CONFIG_SENSORS_RP1_ADC \
-           CONFIG_MFD_RP1=y \
-           CONFIG_COMMON_CLK_RP1=y \
            CONFIG_COMMON_CLK_RP1_SDIO=y \
            CONFIG_MBOX_RP1 \
-           CONFIG_PWM_PIO_RP1 \
-           CONFIG_PWM_RP1=y
+           CONFIG_PWM_PIO_RP1
   FILES:= \
            $(LINUX_DIR)/drivers/firmware/rp1.ko \
            $(LINUX_DIR)/drivers/mailbox/rp1-mailbox.ko \
