@@ -584,16 +584,6 @@ endef
 $(eval $(call KernelPackage,mfd))
 
 
-define KernelPackage/rp1
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=RP1 wrapper
-  FILES:=$(LINUX_DIR)/drivers/firmware/rp1.ko
-  AUTOLOAD:=$(call AutoLoad,10,rp1)
-endef
-
-$(eval $(call KernelPackage,rp1))
-
-
 define KernelPackage/mtdtests
   SUBMENU:=$(OTHER_MENU)
   TITLE:=MTD subsystem tests
@@ -893,20 +883,6 @@ define KernelPackage/pps-gpio/description
 endef
 
 $(eval $(call KernelPackage,pps-gpio))
-
-
-define KernelPackage/rp1-pio
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=PIO controller driver for Raspberry Pi RP1
-  FILES:=$(LINUX_DIR)/drivers/misc/rp1-pio.ko
-  AUTOLOAD:=$(call AutoLoad,18,rp1-pio,1)
-endef
-
-define KernelPackage/rp1-pio/description
-PIO controller driver for Raspberry Pi RP1
-endef
-
-$(eval $(call KernelPackage,rp1-pio))
 
 
 define KernelPackage/pps-ldisc
