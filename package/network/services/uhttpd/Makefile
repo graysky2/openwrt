@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=uhttpd
-PKG_RELEASE:=5
+PKG_RELEASE:=6
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/uhttpd.git
@@ -29,6 +29,7 @@ define Package/uhttpd/default
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=Web Servers/Proxies
+  USERID:=uhttpd=301:uhttpd=301
   TITLE:=uHTTPd - tiny, single threaded HTTP server
 endef
 
@@ -94,6 +95,8 @@ define Package/uhttpd/install
 	$(INSTALL_CONF) ./files/uhttpd.config $(1)/etc/config/uhttpd
 	$(VERSION_SED_SCRIPT) $(1)/etc/config/uhttpd
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/uhttpd $(1)/usr/sbin/uhttpd
+	$(INSTALL_DIR) $(1)/etc/capabilities
+	$(INSTALL_DATA) ./files/uhttpd.json $(1)/etc/capabilities
 endef
 
 define Package/uhttpd-mod-lua/install

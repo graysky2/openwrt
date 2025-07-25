@@ -62,6 +62,7 @@ generate_keys() {
 		sync
 		mv "${UHTTPD_KEY}.new" "${UHTTPD_KEY}"
 		mv "${UHTTPD_CERT}.new" "${UHTTPD_CERT}"
+		chown uhttpd:uhttpd "${UHTTPD_KEY}" "${UHTTPD_CERT}"
 	}
 }
 
@@ -125,6 +126,8 @@ start_instance()
 	config_get config "$cfg" config
 	if [ -z "$config" ]; then
 		mkdir -p /var/etc/uhttpd
+		chown uhttpd:uhttpd /var/etc/uhttpd
+
 		httpdconf="/var/etc/uhttpd/httpd.${cfg}.conf"
 		rm -f ${httpdconf}
 		config_list_foreach "$cfg" httpauth create_httpauth
@@ -220,6 +223,12 @@ start_instance()
 		[ -s "$file" ] && procd_append_param command -H "$file"
 	done
 
+	[ -x /sbin/ujail -a -e /etc/capabilities/uhttpd.json ] && {
+		procd_add_jail uhttpd
+		procd_set_param user uhttpd
+		procd_set_param group uhttpd
+		procd_set_param capabilities /etc/capabilities/uhttpd.json
+	}
 	procd_close_instance
 }
 
