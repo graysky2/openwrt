@@ -18,7 +18,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
 
 --- a/drivers/spi/spi-airoha-snfi.c
 +++ b/drivers/spi/spi-airoha-snfi.c
-@@ -668,7 +668,48 @@ static ssize_t airoha_snand_dirmap_read(
+@@ -672,7 +672,48 @@ static ssize_t airoha_snand_dirmap_read(
  	if (err < 0)
  		return err;
  
@@ -68,7 +68,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	if (err)
  		goto error_dma_mode_off;
  
-@@ -684,7 +725,14 @@ static ssize_t airoha_snand_dirmap_read(
+@@ -688,7 +729,14 @@ static ssize_t airoha_snand_dirmap_read(
  	if (err)
  		goto error_dma_unmap;
  
@@ -84,7 +84,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	val = as_ctrl->nfi_cfg.sec_size * as_ctrl->nfi_cfg.sec_num;
  	val = FIELD_PREP(SPI_NFI_READ_DATA_BYTE_NUM, val);
  	err = regmap_update_bits(as_ctrl->regmap_nfi,
-@@ -711,18 +759,6 @@ static ssize_t airoha_snand_dirmap_read(
+@@ -715,18 +763,6 @@ static ssize_t airoha_snand_dirmap_read(
  	if (err)
  		goto error_dma_unmap;
  
@@ -103,7 +103,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	err = regmap_write(as_ctrl->regmap_nfi, REG_SPI_NFI_CMD, 0x0);
  	if (err)
  		goto error_dma_unmap;
-@@ -819,7 +855,48 @@ static ssize_t airoha_snand_dirmap_write
+@@ -823,7 +859,48 @@ static ssize_t airoha_snand_dirmap_write
  	if (err < 0)
  		return err;
  
@@ -153,7 +153,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	if (err)
  		goto error_dma_mode_off;
  
-@@ -835,8 +912,16 @@ static ssize_t airoha_snand_dirmap_write
+@@ -839,8 +916,16 @@ static ssize_t airoha_snand_dirmap_write
  	if (err)
  		goto error_dma_unmap;
  
@@ -172,7 +172,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	err = regmap_update_bits(as_ctrl->regmap_nfi,
  				 REG_SPI_NFI_SNF_MISC_CTL2,
  				 SPI_NFI_PROG_LOAD_BYTE_NUM, val);
-@@ -861,22 +946,6 @@ static ssize_t airoha_snand_dirmap_write
+@@ -865,22 +950,6 @@ static ssize_t airoha_snand_dirmap_write
  	if (err)
  		goto error_dma_unmap;
  

@@ -20,9 +20,9 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
 
 --- a/drivers/spi/spi-airoha-snfi.c
 +++ b/drivers/spi/spi-airoha-snfi.c
-@@ -618,6 +618,10 @@ static int airoha_snand_dirmap_create(st
- 	if (desc->info.offset + desc->info.length > U32_MAX)
- 		return -EINVAL;
+@@ -662,6 +662,10 @@ static int airoha_snand_dirmap_create(st
+ 	if (desc->info.length > SPI_NAND_CACHE_SIZE)
+ 		return -E2BIG;
  
 +	/* continuous reading is not supported */
 +	if (desc->info.length > SPI_NAND_CACHE_SIZE)

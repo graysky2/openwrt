@@ -38,7 +38,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	return regmap_update_bits(as_ctrl->regmap_nfi,
  				  REG_SPI_NFI_SECCUS_SIZE,
  				  SPI_NFI_CUS_SEC_SIZE, val);
-@@ -635,10 +636,13 @@ static ssize_t airoha_snand_dirmap_read(
+@@ -639,10 +640,13 @@ static ssize_t airoha_snand_dirmap_read(
  	u8 *txrx_buf = spi_get_ctldata(spi);
  	dma_addr_t dma_addr;
  	u32 val, rd_mode, opcode;
@@ -52,7 +52,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	/*
  	 * DUALIO and QUADIO opcodes are not supported by the spi controller,
  	 * replace them with supported opcodes.
-@@ -697,18 +701,17 @@ static ssize_t airoha_snand_dirmap_read(
+@@ -701,18 +705,17 @@ static ssize_t airoha_snand_dirmap_read(
  		goto error_dma_mode_off;
  
  	/* Set number of sector will be read */
@@ -74,7 +74,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  				 SPI_NFI_CUS_SEC_SIZE_EN);
  	if (err)
  		goto error_dma_mode_off;
-@@ -733,11 +736,10 @@ static ssize_t airoha_snand_dirmap_read(
+@@ -737,11 +740,10 @@ static ssize_t airoha_snand_dirmap_read(
  	 *        = NFI_SNF_MISC_CTL2.read_data_byte_number =
  	 *        = NFI_CON.sector_number * NFI_SECCUS.custom_sector_size
  	 */
@@ -88,7 +88,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	if (err)
  		goto error_dma_unmap;
  
-@@ -826,10 +828,13 @@ static ssize_t airoha_snand_dirmap_write
+@@ -830,10 +832,13 @@ static ssize_t airoha_snand_dirmap_write
  	struct airoha_snand_ctrl *as_ctrl;
  	dma_addr_t dma_addr;
  	u32 wr_mode, val, opcode;
@@ -102,7 +102,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	opcode = desc->info.op_tmpl.cmd.opcode;
  	switch (opcode) {
  	case SPI_NAND_OP_PROGRAM_LOAD_SINGLE:
-@@ -884,18 +889,17 @@ static ssize_t airoha_snand_dirmap_write
+@@ -888,18 +893,17 @@ static ssize_t airoha_snand_dirmap_write
  		goto error_dma_mode_off;
  
  	/* Set number of sector will be written */
@@ -124,7 +124,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  				 SPI_NFI_CUS_SEC_SIZE_EN);
  	if (err)
  		goto error_dma_mode_off;
-@@ -920,11 +924,10 @@ static ssize_t airoha_snand_dirmap_write
+@@ -924,11 +928,10 @@ static ssize_t airoha_snand_dirmap_write
  	 *        = NFI_SNF_MISC_CTL2.write_data_byte_number =
  	 *        = NFI_CON.sector_number * NFI_SECCUS.custom_sector_size
  	 */

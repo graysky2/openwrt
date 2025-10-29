@@ -32,7 +32,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
 
 --- a/drivers/spi/spi-airoha-snfi.c
 +++ b/drivers/spi/spi-airoha-snfi.c
-@@ -1013,6 +1013,11 @@ static const struct spi_controller_mem_o
+@@ -1017,6 +1017,11 @@ static const struct spi_controller_mem_o
  	.dirmap_write = airoha_snand_dirmap_write,
  };
  
@@ -44,7 +44,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
  static int airoha_snand_setup(struct spi_device *spi)
  {
  	struct airoha_snand_ctrl *as_ctrl;
-@@ -1059,7 +1064,10 @@ static int airoha_snand_probe(struct pla
+@@ -1063,7 +1068,10 @@ static int airoha_snand_probe(struct pla
  	struct device *dev = &pdev->dev;
  	struct spi_controller *ctrl;
  	void __iomem *base;
@@ -56,7 +56,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
  
  	ctrl = devm_spi_alloc_host(dev, sizeof(*as_ctrl));
  	if (!ctrl)
-@@ -1093,12 +1101,36 @@ static int airoha_snand_probe(struct pla
+@@ -1097,12 +1105,36 @@ static int airoha_snand_probe(struct pla
  		return dev_err_probe(dev, PTR_ERR(as_ctrl->spi_clk),
  				     "unable to get spi clk\n");
  

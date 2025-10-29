@@ -128,7 +128,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
  static bool airoha_snand_supports_op(struct spi_mem *mem,
  				     const struct spi_mem_op *op)
  {
-@@ -641,7 +565,8 @@ static ssize_t airoha_snand_dirmap_read(
+@@ -645,7 +569,8 @@ static ssize_t airoha_snand_dirmap_read(
  
  	as_ctrl = spi_controller_get_devdata(spi->controller);
  
@@ -138,7 +138,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
  
  	/*
  	 * DUALIO and QUADIO opcodes are not supported by the spi controller,
-@@ -833,7 +758,8 @@ static ssize_t airoha_snand_dirmap_write
+@@ -837,7 +762,8 @@ static ssize_t airoha_snand_dirmap_write
  
  	as_ctrl = spi_controller_get_devdata(spi->controller);
  
@@ -148,7 +148,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
  
  	opcode = desc->info.op_tmpl.cmd.opcode;
  	switch (opcode) {
-@@ -1080,7 +1006,6 @@ static int airoha_snand_exec_op(struct s
+@@ -1084,7 +1010,6 @@ static int airoha_snand_exec_op(struct s
  }
  
  static const struct spi_controller_mem_ops airoha_snand_mem_ops = {
@@ -156,7 +156,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
  	.supports_op = airoha_snand_supports_op,
  	.exec_op = airoha_snand_exec_op,
  	.dirmap_create = airoha_snand_dirmap_create,
-@@ -1105,36 +1030,6 @@ static int airoha_snand_setup(struct spi
+@@ -1109,36 +1034,6 @@ static int airoha_snand_setup(struct spi
  	return 0;
  }
  
@@ -193,7 +193,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
  static const struct regmap_config spi_ctrl_regmap_config = {
  	.name		= "ctrl",
  	.reg_bits	= 32,
-@@ -1208,7 +1103,7 @@ static int airoha_snand_probe(struct pla
+@@ -1212,7 +1107,7 @@ static int airoha_snand_probe(struct pla
  	ctrl->setup = airoha_snand_setup;
  	device_set_node(&ctrl->dev, dev_fwnode(dev));
  

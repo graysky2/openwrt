@@ -17,7 +17,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
 
 --- a/drivers/spi/spi-airoha-snfi.c
 +++ b/drivers/spi/spi-airoha-snfi.c
-@@ -1047,6 +1047,7 @@ static const struct regmap_config spi_nf
+@@ -1051,6 +1051,7 @@ static const struct regmap_config spi_nf
  };
  
  static const struct of_device_id airoha_snand_ids[] = {

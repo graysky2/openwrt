@@ -37,7 +37,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  #define SPI_NAND_OP_WRITE_ENABLE		0x06
  #define SPI_NAND_OP_WRITE_DISABLE		0x04
  #define SPI_NAND_OP_PROGRAM_LOAD_SINGLE		0x02
-@@ -664,26 +668,38 @@ static int airoha_snand_dirmap_create(st
+@@ -668,26 +672,38 @@ static int airoha_snand_dirmap_create(st
  static ssize_t airoha_snand_dirmap_read(struct spi_mem_dirmap_desc *desc,
  					u64 offs, size_t len, void *buf)
  {
@@ -81,7 +81,7 @@ Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com
  	}
  
  	err = airoha_snand_set_mode(as_ctrl, SPI_MODE_DMA);
-@@ -717,7 +733,7 @@ static ssize_t airoha_snand_dirmap_read(
+@@ -721,7 +737,7 @@ static ssize_t airoha_snand_dirmap_read(
  
  	/* set read command */
  	err = regmap_write(as_ctrl->regmap_nfi, REG_SPI_NFI_RD_CTL2,

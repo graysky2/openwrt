@@ -15,7 +15,7 @@ Signed-off-by: Mikhail Kshevetskiy <mikhail.kshevetskiy@iopsys.eu>
 
 --- a/drivers/spi/spi-airoha-snfi.c
 +++ b/drivers/spi/spi-airoha-snfi.c
-@@ -847,7 +847,11 @@ static ssize_t airoha_snand_dirmap_write
+@@ -851,7 +851,11 @@ static ssize_t airoha_snand_dirmap_write
  		return -EOPNOTSUPP;
  	}
  
