@@ -1,0 +1,120 @@
+From 90deacd33da06534ee98d41c6e76e108b35cf077 Mon Sep 17 00:00:00 2001
+From: Robyn Kosching <robyn@kosching.me>
+Date: Wed, 15 Jan 2025 12:33:50 +0100
+Subject: [PATCH 3/5] wg-quick: pass on # comments to {Pre,Post}{Up,Down}
+
+Currently commands in {Pre,Post}{Up,Down} are stripped of everything
+starting with the first #, even if the # is escaped or in a string. This
+patch leaves comment interpretation to the shell, as it can presumably
+already handle the difference between comments and escaped #.
+
+Signed-off-by: Robyn Kosching <robyn@kosching.me>
+[Jason: massage commit message, port to other platforms]
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ src/wg-quick/darwin.bash  | 9 +++++----
+ src/wg-quick/freebsd.bash | 9 +++++----
+ src/wg-quick/linux.bash   | 9 +++++----
+ src/wg-quick/openbsd.bash | 9 +++++----
+ 4 files changed, 20 insertions(+), 16 deletions(-)
+
+--- a/src/wg-quick/darwin.bash
++++ b/src/wg-quick/darwin.bash
+@@ -62,6 +62,7 @@ parse_options() {
+ 		stripped="${line%%\#*}"
+ 		key="${stripped%%=*}"; key="${key##*([[:space:]])}"; key="${key%%*([[:space:]])}"
+ 		value="${stripped#*=}"; value="${value##*([[:space:]])}"; value="${value%%*([[:space:]])}"
++		unstripped_value="${line#*=}"; unstripped_value="${unstripped_value##*([[:space:]])}"; unstripped_value="${unstripped_value%%*([[:space:]])}"
+ 		[[ $key == "["* ]] && interface_section=0
+ 		[[ $key == "[Interface]" ]] && interface_section=1
+ 		if [[ $interface_section -eq 1 ]]; then
+@@ -72,10 +73,10 @@ parse_options() {
+ 				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v ) || DNS_SEARCH+=( $v )
+ 			done; continue ;;
+ 			Table) TABLE="$value"; continue ;;
+-			PreUp) PRE_UP+=( "$value" ); continue ;;
+-			PreDown) PRE_DOWN+=( "$value" ); continue ;;
+-			PostUp) POST_UP+=( "$value" ); continue ;;
+-			PostDown) POST_DOWN+=( "$value" ); continue ;;
++			PreUp) PRE_UP+=( "$unstripped_value" ); continue ;;
++			PreDown) PRE_DOWN+=( "$unstripped_value" ); continue ;;
++			PostUp) POST_UP+=( "$unstripped_value" ); continue ;;
++			PostDown) POST_DOWN+=( "$unstripped_value" ); continue ;;
+ 			SaveConfig) read_bool SAVE_CONFIG "$value"; continue ;;
+ 			esac
+ 		fi
+--- a/src/wg-quick/freebsd.bash
++++ b/src/wg-quick/freebsd.bash
+@@ -80,6 +80,7 @@ parse_options() {
+ 		stripped="${line%%\#*}"
+ 		key="${stripped%%=*}"; key="${key##*([[:space:]])}"; key="${key%%*([[:space:]])}"
+ 		value="${stripped#*=}"; value="${value##*([[:space:]])}"; value="${value%%*([[:space:]])}"
++		unstripped_value="${line#*=}"; unstripped_value="${unstripped_value##*([[:space:]])}"; unstripped_value="${unstripped_value%%*([[:space:]])}"
+ 		[[ $key == "["* ]] && interface_section=0
+ 		[[ $key == "[Interface]" ]] && interface_section=1
+ 		if [[ $interface_section -eq 1 ]]; then
+@@ -90,10 +91,10 @@ parse_options() {
+ 				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v ) || DNS_SEARCH+=( $v )
+ 			done; continue ;;
+ 			Table) TABLE="$value"; continue ;;
+-			PreUp) PRE_UP+=( "$value" ); continue ;;
+-			PreDown) PRE_DOWN+=( "$value" ); continue ;;
+-			PostUp) POST_UP+=( "$value" ); continue ;;
+-			PostDown) POST_DOWN+=( "$value" ); continue ;;
++			PreUp) PRE_UP+=( "$unstripped_value" ); continue ;;
++			PreDown) PRE_DOWN+=( "$unstripped_value" ); continue ;;
++			PostUp) POST_UP+=( "$unstripped_value" ); continue ;;
++			PostDown) POST_DOWN+=( "$unstripped_value" ); continue ;;
+ 			SaveConfig) read_bool SAVE_CONFIG "$value"; continue ;;
+ 			esac
+ 		fi
+--- a/src/wg-quick/linux.bash
++++ b/src/wg-quick/linux.bash
+@@ -51,6 +51,7 @@ parse_options() {
+ 		stripped="${line%%\#*}"
+ 		key="${stripped%%=*}"; key="${key##*([[:space:]])}"; key="${key%%*([[:space:]])}"
+ 		value="${stripped#*=}"; value="${value##*([[:space:]])}"; value="${value%%*([[:space:]])}"
++		unstripped_value="${line#*=}"; unstripped_value="${unstripped_value##*([[:space:]])}"; unstripped_value="${unstripped_value%%*([[:space:]])}"
+ 		[[ $key == "["* ]] && interface_section=0
+ 		[[ $key == "[Interface]" ]] && interface_section=1
+ 		if [[ $interface_section -eq 1 ]]; then
+@@ -61,10 +62,10 @@ parse_options() {
+ 				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v ) || DNS_SEARCH+=( $v )
+ 			done; continue ;;
+ 			Table) TABLE="$value"; continue ;;
+-			PreUp) PRE_UP+=( "$value" ); continue ;;
+-			PreDown) PRE_DOWN+=( "$value" ); continue ;;
+-			PostUp) POST_UP+=( "$value" ); continue ;;
+-			PostDown) POST_DOWN+=( "$value" ); continue ;;
++			PreUp) PRE_UP+=( "$unstripped_value" ); continue ;;
++			PreDown) PRE_DOWN+=( "$unstripped_value" ); continue ;;
++			PostUp) POST_UP+=( "$unstripped_value" ); continue ;;
++			PostDown) POST_DOWN+=( "$unstripped_value" ); continue ;;
+ 			SaveConfig) read_bool SAVE_CONFIG "$value"; continue ;;
+ 			esac
+ 		fi
+--- a/src/wg-quick/openbsd.bash
++++ b/src/wg-quick/openbsd.bash
+@@ -52,6 +52,7 @@ parse_options() {
+ 		stripped="${line%%\#*}"
+ 		key="${stripped%%=*}"; key="${key##*([[:space:]])}"; key="${key%%*([[:space:]])}"
+ 		value="${stripped#*=}"; value="${value##*([[:space:]])}"; value="${value%%*([[:space:]])}"
++		unstripped_value="${line#*=}"; unstripped_value="${unstripped_value##*([[:space:]])}"; unstripped_value="${unstripped_value%%*([[:space:]])}"
+ 		[[ $key == "["* ]] && interface_section=0
+ 		[[ $key == "[Interface]" ]] && interface_section=1
+ 		if [[ $interface_section -eq 1 ]]; then
+@@ -62,10 +63,10 @@ parse_options() {
+ 				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v ) || DNS_SEARCH+=( $v )
+ 			done; continue ;;
+ 			Table) TABLE="$value"; continue ;;
+-			PreUp) PRE_UP+=( "$value" ); continue ;;
+-			PreDown) PRE_DOWN+=( "$value" ); continue ;;
+-			PostUp) POST_UP+=( "$value" ); continue ;;
+-			PostDown) POST_DOWN+=( "$value" ); continue ;;
++			PreUp) PRE_UP+=( "$unstripped_value" ); continue ;;
++			PreDown) PRE_DOWN+=( "$unstripped_value" ); continue ;;
++			PostUp) POST_UP+=( "$unstripped_value" ); continue ;;
++			PostDown) POST_DOWN+=( "$unstripped_value" ); continue ;;
+ 			SaveConfig) read_bool SAVE_CONFIG "$value"; continue ;;
+ 			esac
+ 		fi

@@ -1,0 +1,30 @@
+From d3b40aff964789a2a0533cb7a070592a75a996e3 Mon Sep 17 00:00:00 2001
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Fri, 23 May 2025 20:59:38 +0200
+Subject: [PATCH 4/5] wg-quick: linux: deal with resolvconf migration more
+ gracefully
+
+When Ubuntu systems upgrade from Debian's atrocious resolvconf to the
+systemd-resolve symlink, they sometimes leave around
+/etc/resolvconf/interface-order, which then winds up breaking the
+detection and passing the bogus 'tun.' prefix to systemd's resolvconf,
+resulting in failure. Work around this by only doing the 'tun.' prefix
+hack if resolvconf isn't a symlink. This is ugly but so it goes.
+
+Reported-by: Andrei Borzenkov <arvidjaar@gmail.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ src/wg-quick/linux.bash | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/src/wg-quick/linux.bash
++++ b/src/wg-quick/linux.bash
+@@ -143,7 +143,7 @@ set_mtu_up() {
+ }
+ 
+ resolvconf_iface_prefix() {
+-	[[ -f /etc/resolvconf/interface-order ]] || return 0
++	[[ -f /etc/resolvconf/interface-order && ! -L $(type -P resolvconf) ]] || return 0
+ 	local iface
+ 	while read -r iface; do
+ 		[[ $iface =~ ^([A-Za-z0-9-]+)\*$ ]] || continue

@@ -1,0 +1,80 @@
+From 0b7d9821f2815973a2930ace28a3f73c205d0e5c Mon Sep 17 00:00:00 2001
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Thu, 19 Jun 2025 16:58:39 +0200
+Subject: [PATCH 5/5] wg-quick: use addconf instead of setconf
+
+The example in the man page at some point changed:
+
+-    \fBPostUp = wg set %i private-key <(pass WireGuard/private-keys/%i)\fP
++    \fBPreUp = wg set %i private-key <(pass WireGuard/private-keys/%i)\fP
+
+This is actually wrong because PreUp is followed by set_config(), which
+calls `wg setconf`, which in turn deletes the private key from the
+interface because it is missing from the configuration. Replacing this
+with `wg addconf` is safe to do because the interface is newly created.
+
+Suggested-by: Matthias Dressel <code@deadcode.eu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ src/wg-quick/android.c    | 2 +-
+ src/wg-quick/darwin.bash  | 2 +-
+ src/wg-quick/freebsd.bash | 2 +-
+ src/wg-quick/linux.bash   | 2 +-
+ src/wg-quick/openbsd.bash | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+--- a/src/wg-quick/android.c
++++ b/src/wg-quick/android.c
+@@ -1047,7 +1047,7 @@ static void set_routes(const char *iface
+ static void set_config(const char *iface, const char *config)
+ {
+ 	FILE *config_writer;
+-	_cleanup_free_ char *cmd = concat("wg setconf ", iface, " /proc/self/fd/0", NULL);
++	_cleanup_free_ char *cmd = concat("wg addconf ", iface, " /proc/self/fd/0", NULL);
+ 	int ret;
+ 
+ 	printf("[#] %s\n", cmd);
+--- a/src/wg-quick/darwin.bash
++++ b/src/wg-quick/darwin.bash
+@@ -370,7 +370,7 @@ add_route() {
+ }
+ 
+ set_config() {
+-	cmd wg setconf "$REAL_INTERFACE" <(echo "$WG_CONFIG")
++	cmd wg addconf "$REAL_INTERFACE" <(echo "$WG_CONFIG")
+ }
+ 
+ save_config() {
+--- a/src/wg-quick/freebsd.bash
++++ b/src/wg-quick/freebsd.bash
+@@ -338,7 +338,7 @@ add_route() {
+ }
+ 
+ set_config() {
+-	echo "$WG_CONFIG" | cmd wg setconf "$INTERFACE" /dev/stdin
++	echo "$WG_CONFIG" | cmd wg addconf "$INTERFACE" /dev/stdin
+ }
+ 
+ save_config() {
+--- a/src/wg-quick/linux.bash
++++ b/src/wg-quick/linux.bash
+@@ -249,7 +249,7 @@ add_default() {
+ }
+ 
+ set_config() {
+-	cmd wg setconf "$INTERFACE" <(echo "$WG_CONFIG")
++	cmd wg addconf "$INTERFACE" <(echo "$WG_CONFIG")
+ }
+ 
+ save_config() {
+--- a/src/wg-quick/openbsd.bash
++++ b/src/wg-quick/openbsd.bash
+@@ -338,7 +338,7 @@ add_route() {
+ }
+ 
+ set_config() {
+-	cmd wg setconf "$REAL_INTERFACE" <(echo "$WG_CONFIG")
++	cmd wg addconf "$REAL_INTERFACE" <(echo "$WG_CONFIG")
+ }
+ 
+ save_config() {

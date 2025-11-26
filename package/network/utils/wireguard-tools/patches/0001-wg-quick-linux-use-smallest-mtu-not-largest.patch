@@ -1,0 +1,43 @@
+From 5150cd647073be1f1c12688aef291bdf17970154 Mon Sep 17 00:00:00 2001
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Wed, 21 May 2025 23:03:08 +0200
+Subject: [PATCH 1/5] wg-quick: linux: use smallest mtu, not largest
+
+By accident, this function was looking at the endpoint with the largest
+MTU rather than the smallest one.
+
+Reported-by: Ismael Bouya <ismael@bouya.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ src/wg-quick/linux.bash | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+--- a/src/wg-quick/linux.bash
++++ b/src/wg-quick/linux.bash
+@@ -123,7 +123,7 @@ add_addr() {
+ }
+ 
+ set_mtu_up() {
+-	local mtu=0 endpoint output
++	local mtu=2147483647 endpoint output
+ 	if [[ -n $MTU ]]; then
+ 		cmd ip link set mtu "$MTU" up dev "$INTERFACE"
+ 		return
+@@ -131,13 +131,13 @@ set_mtu_up() {
+ 	while read -r _ endpoint; do
+ 		[[ $endpoint =~ ^\[?([a-z0-9:.]+)\]?:[0-9]+$ ]] || continue
+ 		output="$(ip route get "${BASH_REMATCH[1]}" || true)"
+-		[[ ( $output =~ mtu\ ([0-9]+) || ( $output =~ dev\ ([^ ]+) && $(ip link show dev "${BASH_REMATCH[1]}") =~ mtu\ ([0-9]+) ) ) && ${BASH_REMATCH[1]} -gt $mtu ]] && mtu="${BASH_REMATCH[1]}"
++		[[ ( $output =~ mtu\ ([0-9]+) || ( $output =~ dev\ ([^ ]+) && $(ip link show dev "${BASH_REMATCH[1]}") =~ mtu\ ([0-9]+) ) ) && ${BASH_REMATCH[1]} -lt $mtu ]] && mtu="${BASH_REMATCH[1]}"
+ 	done < <(wg show "$INTERFACE" endpoints)
+-	if [[ $mtu -eq 0 ]]; then
++	if [[ $mtu -eq 2147483647 ]]; then
+ 		read -r output < <(ip route show default || true) || true
+-		[[ ( $output =~ mtu\ ([0-9]+) || ( $output =~ dev\ ([^ ]+) && $(ip link show dev "${BASH_REMATCH[1]}") =~ mtu\ ([0-9]+) ) ) && ${BASH_REMATCH[1]} -gt $mtu ]] && mtu="${BASH_REMATCH[1]}"
++		[[ ( $output =~ mtu\ ([0-9]+) || ( $output =~ dev\ ([^ ]+) && $(ip link show dev "${BASH_REMATCH[1]}") =~ mtu\ ([0-9]+) ) ) && ${BASH_REMATCH[1]} -lt $mtu ]] && mtu="${BASH_REMATCH[1]}"
+ 	fi
+-	[[ $mtu -gt 0 ]] || mtu=1500
++	[[ $mtu -gt 0 && $mtu -lt 2147483647 ]] || mtu=1500
+ 	cmd ip link set mtu $(( mtu - 80 )) up dev "$INTERFACE"
+ }
+ 
