@@ -154,6 +154,7 @@ $(eval $(call KernelPackage,libeth))
 define KernelPackage/libphy
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=PHY library
+  DEPENDS:=LINUX_6_18:kmod-mdio
   KCONFIG:=CONFIG_PHYLIB \
 	   CONFIG_PHYLIB_LEDS=y
   FILES:=$(LINUX_DIR)/drivers/net/phy/libphy.ko
