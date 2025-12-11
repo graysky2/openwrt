@@ -572,7 +572,7 @@ endef
 ifndef CONFIG_TARGET_uml
 define KernelPackage/crypto-lib-chacha20/x86_64
   KCONFIG+=CONFIG_CRYPTO_CHACHA20_X86_64
-  FILES+=$(LINUX_DIR)/arch/x86/crypto/chacha-x86_64.ko
+  FILES+=$(LINUX_DIR)/arch/x86/crypto/chacha-x86_64.ko@lt6.18
 endef
 endif
 
@@ -638,7 +638,7 @@ endef
 ifndef CONFIG_TARGET_uml
 define KernelPackage/crypto-lib-curve25519/x86_64
   KCONFIG+=CONFIG_CRYPTO_CURVE25519_X86
-  FILES+=$(LINUX_DIR)/arch/x86/crypto/curve25519-x86_64.ko
+  FILES+=$(LINUX_DIR)/arch/x86/crypto/curve25519-x86_64.ko@lt6.18
 endef
 endif
 
@@ -674,8 +674,8 @@ endef
 
 ifndef CONFIG_TARGET_uml
 define KernelPackage/crypto-lib-poly1305/x86_64
-  KCONFIG+=CONFIG_CRYPTO_POLY1305_X86_64
-  FILES+=$(LINUX_DIR)/arch/x86/crypto/poly1305-x86_64.ko
+  KCONFIG+=$(if $(CONFIG_LINUX_6_18),,CONFIG_CRYPTO_POLY1305_X86_64)
+  FILES+=$(LINUX_DIR)/arch/x86/crypto/poly1305-x86_64.ko@le6.12
 endef
 endif
 
@@ -736,9 +736,18 @@ endef
 $(eval $(call KernelPackage,crypto-md4))
 
 
+define KernelPackage/libmd5
+  TITLE:=MD5 digest CryptoAPI module
+  KCONFIG:=CONFIG_CRYPTO_MD5
+  FILES:=$(LINUX_DIR)/lib/crypto/libmd5.ko
+endef
+
+$(eval $(call KernelPackage,libmd5))
+
+
 define KernelPackage/crypto-md5
   TITLE:=MD5 digest CryptoAPI module
-  DEPENDS:=+kmod-crypto-hash
+  DEPENDS:=+kmod-crypto-hash +LINUX_6_18:kmod-libmd5
   KCONFIG:= \
 	CONFIG_CRYPTO_MD5 \
 	CONFIG_CRYPTO_MD5_OCTEON \
@@ -1029,8 +1038,8 @@ endef
 
 ifndef CONFIG_TARGET_uml
 define KernelPackage/crypto-sha1/x86_64
-  FILES+=$(LINUX_DIR)/arch/x86/crypto/sha1-ssse3.ko
-  AUTOLOAD+=$(call AutoLoad,09,sha1-ssse3)
+  FILES+=$(LINUX_DIR)/arch/x86/crypto/sha1-ssse3.ko@lt6.18
+  AUTOLOAD+=$(call AutoLoad,09,!LINUX_6_18:sha1-ssse3)
 endef
 endif
 
@@ -1095,8 +1104,8 @@ endef
 
 ifndef CONFIG_TARGET_uml
 define KernelPackage/crypto-sha256/x86_64
-  FILES+=$(LINUX_DIR)/arch/x86/crypto/sha256-ssse3.ko
-  AUTOLOAD+=$(call AutoLoad,09,sha256-ssse3)
+  FILES+=$(LINUX_DIR)/arch/x86/crypto/sha256-ssse3.ko@lt6.18
+  AUTOLOAD+=$(call AutoLoad,09,!LINUX_6_18:sha256-ssse3)
 endef
 endif
 
@@ -1155,8 +1164,8 @@ KernelPackage/crypto-sha512/tegra=$(KernelPackage/crypto-sha512/arm)
 
 ifndef CONFIG_TARGET_uml
 define KernelPackage/crypto-sha512/x86_64
-  FILES+=$(LINUX_DIR)/arch/x86/crypto/sha512-ssse3.ko
-  AUTOLOAD+=$(call AutoLoad,09,sha512-ssse3)
+  FILES+=$(LINUX_DIR)/arch/x86/crypto/sha512-ssse3.ko@lt6.18
+  AUTOLOAD+=$(call AutoLoad,09,!LINUX_6_18:sha512-ssse3)
 endef
 endif
 
