@@ -1,0 +1,28 @@
+--- a/drivers/leds/rgb/Kconfig
++++ b/drivers/leds/rgb/Kconfig
+@@ -75,4 +75,18 @@ config LEDS_MT6370_RGB
+ 	  This driver can also be built as a module. If so, the module
+ 	  will be called "leds-mt6370-rgb".
+ 
++config LEDS_UBNT_ETHERLIGHTING
++	tristate "LED support for Ubiquiti EtherLighting port status LEDs"
++	depends on I2C
++	depends on OF
++	select CRC8
++	help
++	  This option enables support for the per-port RGBW status LEDs
++	  ("EtherLighting") found on some Ubiquiti UniFi switches. Each
++	  port's LED is driven over I2C by a satellite microcontroller,
++	  separate from the switch ASIC.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called leds-ubnt-etherlighting.
++
+ endif # LEDS_CLASS_MULTICOLOR
+--- a/drivers/leds/rgb/Makefile
++++ b/drivers/leds/rgb/Makefile
+@@ -6,3 +6,4 @@ obj-$(CONFIG_LEDS_NCP5623)		+= leds-ncp5
+ obj-$(CONFIG_LEDS_PWM_MULTICOLOR)	+= leds-pwm-multicolor.o
+ obj-$(CONFIG_LEDS_QCOM_LPG)		+= leds-qcom-lpg.o
+ obj-$(CONFIG_LEDS_MT6370_RGB)		+= leds-mt6370-rgb.o
++obj-$(CONFIG_LEDS_UBNT_ETHERLIGHTING)	+= leds-ubnt-etherlighting.o

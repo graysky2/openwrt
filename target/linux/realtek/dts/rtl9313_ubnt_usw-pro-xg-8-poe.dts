@@ -192,7 +192,163 @@
 
 	i2c_sfp1: i2c@0 { reg = <0>; };
 	i2c_sfp2: i2c@1 { reg = <1>; };
-	i2c7: i2c@7 { reg = <7>; }; /* Etherlighting MCU at 0x66 */
+
+	i2c7: i2c@7 {
+		reg = <7>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		etherlight@66 {
+			compatible = "ubnt,etherlighting";
+			reg = <0x66>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			boot-mode-gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
+			reset-gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
+
+			/* one child per physical port; outer reg = wire-protocol port index */
+			led@0 {
+				reg = <0>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <1>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@1 {
+				reg = <1>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <2>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@2 {
+				reg = <2>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <3>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@3 {
+				reg = <3>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <4>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@4 {
+				reg = <4>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <5>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@5 {
+				reg = <5>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <6>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@6 {
+				reg = <6>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <7>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@7 {
+				reg = <7>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <8>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@8 {
+				reg = <8>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <9>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+
+			led@9 {
+				reg = <9>;
+				color = <LED_COLOR_ID_MULTI>;
+				function = LED_FUNCTION_LAN;
+				function-enumerator = <10>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				led@0 { reg = <0>; color = <LED_COLOR_ID_RED>; };
+				led@1 { reg = <1>; color = <LED_COLOR_ID_GREEN>; };
+				led@2 { reg = <2>; color = <LED_COLOR_ID_BLUE>; };
+				led@3 { reg = <3>; color = <LED_COLOR_ID_WHITE>; };
+			};
+		};
+	};
 
 	i2c8: i2c@8 {
 		reg = <8>;
