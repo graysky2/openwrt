@@ -37,10 +37,22 @@ define Kernel/Clean
 	$(call Kernel/Clean/Default)
 endef
 
+# GPG signature verification for the kernel source. Upstream signs the
+# uncompressed tarball, not the compressed file, hence the $(basename ...)
+# to strip the compression extension from the signature filename.
+# Stable releases (x.y.z) are signed by Greg Kroah-Hartman, mainline
+# releases (x.y) by Linus Torvalds.
+LINUX_SOURCE_SIG?=$(basename $(LINUX_SOURCE)).sign
+LINUX_VALIDPGPKEYS?= \
+	647F28654894E3BD457199BE38DBBDC86092693E \
+	ABAF11C65A2970B130ABE3C479BE3E4300411886
+
 define Download/kernel
   URL:=$(LINUX_SITE)
   FILE:=$(LINUX_SOURCE)
   HASH:=$(LINUX_KERNEL_HASH)
+  SIG:=$(LINUX_SOURCE_SIG)
+  VALIDPGPKEYS:=$(LINUX_VALIDPGPKEYS)
 endef
 
 KERNEL_GIT_OPTS:=
