@@ -102,7 +102,7 @@ Signed-off-by: Julius Bairaktaris <julius@bairaktaris.de>
 +	    !test_bit(BR_FDB_ADDED_BY_USER, &f->flags))
 +		return NULL;
 +
-+	p = READ_ONCE(f->dst);
++	p = br_fdb_dst_port(f);
 +
 +	return p ? p->dev : NULL;
 +}
