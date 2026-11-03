@@ -12,8 +12,6 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  net/Kconfig               |  2 +-
  5 files changed, 13 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
-index a9acf4575..012112b07 100644
 --- a/drivers/base/Kconfig
 +++ b/drivers/base/Kconfig
 @@ -213,7 +213,7 @@ config SOC_BUS
@@ -25,8 +23,6 @@ index a9acf4575..012112b07 100644
  	default n
  	select IRQ_WORK
  	help
-diff --git a/drivers/dma-buf/Makefile b/drivers/dma-buf/Makefile
-index 523731b0f..ab82f7043 100644
 --- a/drivers/dma-buf/Makefile
 +++ b/drivers/dma-buf/Makefile
 @@ -1,11 +1,13 @@
@@ -55,8 +51,6 @@ index 523731b0f..ab82f7043 100644
  obj-$(CONFIG_DMABUF_KUNIT_TEST) += dmabuf_kunit.o
 +
 +dma-shared-buffer-objs :=  $(dma-buf-objs-y)
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index 36cdc3426..70d86999f 100644
 --- a/drivers/dma-buf/dma-buf.c
 +++ b/drivers/dma-buf/dma-buf.c
 @@ -1869,4 +1869,5 @@ static void __exit dma_buf_deinit(void)
@@ -66,8 +60,6 @@ index 36cdc3426..70d86999f 100644
 -__exitcall(dma_buf_deinit);
 +module_exit(dma_buf_deinit);
 +MODULE_LICENSE("GPL");
-diff --git a/drivers/dma-buf/heaps/Makefile b/drivers/dma-buf/heaps/Makefile
-index 974467791..87f71c3ee 100644
 --- a/drivers/dma-buf/heaps/Makefile
 +++ b/drivers/dma-buf/heaps/Makefile
 @@ -1,3 +1,3 @@
@@ -76,11 +68,9 @@ index 974467791..87f71c3ee 100644
 -obj-$(CONFIG_DMABUF_HEAPS_CMA)		+= cma_heap.o
 +dma-buf-objs-$(CONFIG_DMABUF_HEAPS_SYSTEM)	+= system_heap.o
 +dma-buf-objs-$(CONFIG_DMABUF_HEAPS_CMA)		+= cma_heap.o
-diff --git a/fs/d_path.c b/fs/d_path.c
-index c25309006..ba5222db9 100644
 --- a/fs/d_path.c
 +++ b/fs/d_path.c
-@@ -316,6 +316,7 @@ char *dynamic_dname(char *buffer, int buflen, const char *fmt, ...)
+@@ -316,6 +316,7 @@ char *dynamic_dname(char *buffer, int bu
  	start = buffer + (buflen - sz);
  	return memmove(start, buffer, sz);
  }
@@ -88,11 +78,9 @@ index c25309006..ba5222db9 100644
  
  char *simple_dname(struct dentry *dentry, char *buffer, int buflen)
  {
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 04b62c16f..5bda9a114 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4625,6 +4625,7 @@ int wake_up_state(struct task_struct *p, unsigned int state)
+@@ -4625,6 +4625,7 @@ int wake_up_state(struct task_struct *p,
  {
  	return try_to_wake_up(p, state, 0);
  }
@@ -100,8 +88,6 @@ index 04b62c16f..5bda9a114 100644
  
  /*
   * Perform scheduler related setup for a newly forked process p.
-diff --git a/net/Kconfig b/net/Kconfig
-index 38ffafddd..969e492dc 100644
 --- a/net/Kconfig
 +++ b/net/Kconfig
 @@ -74,7 +74,7 @@ config SKB_EXTENSIONS

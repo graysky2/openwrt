@@ -56,7 +56,7 @@ Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
  	led_cdev->flags |= LED_RETAIN_AT_SHUTDOWN;
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1015,28 +1015,6 @@ int rtl8125_get_led_mode(struct rtl8169_
+@@ -1141,28 +1141,6 @@ int rtl8125_get_led_mode(struct rtl8169_
  	return ret;
  }
  

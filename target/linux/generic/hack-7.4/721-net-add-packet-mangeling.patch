@@ -17,8 +17,6 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  net/ethernet/eth.c        |  6 ++++++
  6 files changed, 58 insertions(+), 15 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ad6dc5893..cd0f4e930 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
 @@ -1802,6 +1802,7 @@ enum netdev_priv_flags {
@@ -52,11 +50,9 @@ index ad6dc5893..cd0f4e930 100644
  /*
   * Cache lines mostly used on receive path (including eth_type_trans())
   */
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 1c41a924d..f2e127ef8 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -3370,6 +3370,10 @@ static __always_inline int pskb_trim(struct sk_buff *skb, unsigned int len)
+@@ -3370,6 +3370,10 @@ static __always_inline int pskb_trim(str
  	return (len < skb->len) ? __pskb_trim(skb, len) : 0;
  }
  
@@ -67,7 +63,7 @@ index 1c41a924d..f2e127ef8 100644
  /**
   *	pskb_trim_unique - remove end from a paged unique (not cloned) buffer
   *	@skb: buffer to alter
-@@ -3535,16 +3539,6 @@ static inline struct sk_buff *dev_alloc_skb(unsigned int length)
+@@ -3535,16 +3539,6 @@ static inline struct sk_buff *dev_alloc_
  }
  
  
@@ -84,8 +80,6 @@ index 1c41a924d..f2e127ef8 100644
  static inline struct sk_buff *netdev_alloc_skb_ip_align(struct net_device *dev,
  		unsigned int length)
  {
-diff --git a/net/Kconfig b/net/Kconfig
-index ccb9987bd..a119988a2 100644
 --- a/net/Kconfig
 +++ b/net/Kconfig
 @@ -26,6 +26,12 @@ menuconfig NET
@@ -101,11 +95,9 @@ index ccb9987bd..a119988a2 100644
  config WANT_COMPAT_NETLINK_MESSAGES
  	bool
  	help
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 3ac700d37..0d7af3c27 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4063,6 +4063,11 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
+@@ -4063,6 +4063,11 @@ static int xmit_one(struct sk_buff *skb,
  	if (dev_nit_active_rcu(dev))
  		dev_queue_xmit_nit(skb, dev);
  
@@ -117,8 +109,6 @@ index 3ac700d37..0d7af3c27 100644
  	len = skb->len;
  	trace_net_dev_start_xmit(skb, dev);
  	rc = netdev_start_xmit(skb, dev, txq, more);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 48f676411..66904e690 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
 @@ -65,6 +65,7 @@
@@ -129,7 +119,7 @@ index 48f676411..66904e690 100644
  #include <kunit/visibility.h>
  
  #include <net/protocol.h>
-@@ -257,6 +258,22 @@ void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
+@@ -257,6 +258,22 @@ void *__napi_alloc_frag_align(unsigned i
  }
  EXPORT_SYMBOL(__napi_alloc_frag_align);
  
@@ -152,11 +142,9 @@ index 48f676411..66904e690 100644
  void *__netdev_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
  {
  	void *data;
-diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-index 39aab0f80..83f2bf0bf 100644
 --- a/net/ethernet/eth.c
 +++ b/net/ethernet/eth.c
-@@ -157,6 +157,12 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
+@@ -157,6 +157,12 @@ __be16 eth_type_trans(struct sk_buff *sk
  	const struct ethhdr *eth;
  
  	skb->dev = dev;
