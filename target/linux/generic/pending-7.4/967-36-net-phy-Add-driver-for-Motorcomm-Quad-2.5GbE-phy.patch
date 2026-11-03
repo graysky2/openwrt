@@ -95,13 +95,27 @@ changes in v2:
  include/uapi/linux/mdio.h   |   12 +
  4 files changed, 1588 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index bf7c2c50c..540d8da98 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -361,6 +361,7 @@ config MICROSEMI_PHY
+ 
+ config MOTORCOMM_PHY
+ 	tristate "Motorcomm PHYs"
++	select PHY_PACKAGE
+ 	help
+ 	  Enables support for Motorcomm network PHYs.
+ 	  Currently supports YT85xx Gigabit Ethernet PHYs, YT861x PHYs
+diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+index 46a26b76d..bf287f4b5 100644
 --- a/drivers/net/phy/motorcomm.c
 +++ b/drivers/net/phy/motorcomm.c
 @@ -1,9 +1,10 @@
  // SPDX-License-Identifier: GPL-2.0+
  /*
-- * Motorcomm 8511/8521/8522/8531/8531S/8821 PHY driver.
-+ * Motorcomm 8511/8521/8522/8531/8531S/8821/8824 PHY driver.
+- * Motorcomm 8511/8521/8522/8531/8531S/861x/8821 PHY driver.
++ * Motorcomm 8511/8521/8522/8531/8531S/861x/8821/8824 PHY driver.
   *
   * Author: Peter Geis <pgwipeout@gmail.com>
   * Author: Frank <Frank.Sae@motor-comm.com>
@@ -109,8 +123,8 @@ changes in v2:
   */
  
  #include <linux/bitfield.h>
-@@ -11,15 +12,19 @@
- #include <linux/etherdevice.h>
+@@ -12,9 +13,12 @@
+ #include <linux/ethtool_netlink.h>
  #include <linux/kernel.h>
  #include <linux/module.h>
 +#include <linux/of.h>
@@ -122,14 +136,15 @@ changes in v2:
  #define PHY_ID_YT8511		0x0000010a
  #define PHY_ID_YT8521		0x0000011a
  #define PHY_ID_YT8522		0x4f51e928
- #define PHY_ID_YT8531		0x4f51e91b
- #define PHY_ID_YT8531S		0x4f51e91a
+@@ -23,6 +27,7 @@
+ /* Live captured from YT921x switch internal MDIO bus */
+ #define PHY_ID_INT861X		0x01e04281
  #define PHY_ID_YT8821		0x4f51ea19
 +#define PHY_ID_YT8824		0x4f51e8b8
  /* YT8521/YT8531S/YT8821 Register Overview
   *	UTP Register space	|	FIBER Register space
   *  ------------------------------------------------------------
-@@ -31,6 +36,18 @@
+@@ -34,6 +39,18 @@
   *  ------------------------------------------------------------
   */
  
@@ -148,7 +163,7 @@ changes in v2:
  /* 0x10 ~ 0x15 , 0x1E and 0x1F are common MII registers of yt phy */
  
  /* Specific Function Control Register */
-@@ -377,6 +394,17 @@
+@@ -398,6 +415,17 @@
  #define YT8821_CHIP_MODE_AUTO_BX2500_SGMII	0
  #define YT8821_CHIP_MODE_FORCE_BX2500		1
  
@@ -166,7 +181,7 @@ changes in v2:
  struct yt8521_priv {
  	/* combo_advertising is used for case of YT8521 in combo mode,
  	 * this means that yt8521 may work in utp or fiber mode which depends
-@@ -395,6 +423,12 @@ struct yt8521_priv {
+@@ -416,6 +444,12 @@ struct yt8521_priv {
  	u8 reg_page;
  };
  
@@ -179,10 +194,11 @@ changes in v2:
  /**
   * ytphy_read_ext() - read a PHY's extended register
   * @phydev: a pointer to a &struct phy_device
-@@ -434,6 +468,70 @@ static int ytphy_read_ext_with_lock(stru
+@@ -454,6 +488,70 @@ static int ytphy_read_ext_with_lock(struct phy_device *phydev, u16 regnum)
+ 	return ret;
  }
  
- /**
++/**
 + * ytphy_read_top_ext() - read a PHY's top extended register for YT8824
 + * @phydev: a pointer to a &struct phy_device
 + * @regnum: register number to read
@@ -246,14 +262,27 @@ changes in v2:
 +	return ret;
 +}
 +
-+/**
+ /**
   * ytphy_write_ext() - write a PHY's extended register
   * @phydev: a pointer to a &struct phy_device
-  * @regnum: register number to write
-@@ -629,6 +727,988 @@ err_restore_page:
- 	return phy_restore_page(phydev, old_page, ret);
- }
+@@ -639,15 +737,997 @@ static int ytphy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
+ 		mask = YTPHY_WCR_ENABLE | YTPHY_WCR_INTR_SEL;
+ 		ret = ytphy_modify_ext(phydev, YTPHY_WOL_CONFIG_REG, mask, 0);
  
+-		/* Disable WOL interrupt */
+-		ret = __phy_modify(phydev, YTPHY_INTERRUPT_ENABLE_REG,
+-				   YTPHY_IER_WOL, 0);
++		/* Disable WOL interrupt */
++		ret = __phy_modify(phydev, YTPHY_INTERRUPT_ENABLE_REG,
++				   YTPHY_IER_WOL, 0);
++		if (ret < 0)
++			goto err_restore_page;
++	}
++
++err_restore_page:
++	return phy_restore_page(phydev, old_page, ret);
++}
++
 +/**
 + * yt8824_read_page() - read PHY8824 reg page
 + * @phydev: a pointer to a &struct phy_device
@@ -1215,7 +1244,8 @@ changes in v2:
 +	mutex_lock(&priv->shared_lock);
 +	if (priv->interface_mode == PHY_INTERFACE_MODE_INTERNAL) {
 +		ret = yt8824_internal_config_init_paged(phydev);
-+		if (ret < 0)
+ 		if (ret < 0)
+-			goto err_restore_page;
 +			goto err;
 +	} else {
 +		ret = yt8824_extern_config_sds_init_paged(phydev);
@@ -1224,22 +1254,22 @@ changes in v2:
 +		ret = yt8824_extern_config_utp_init_paged(phydev);
 +		if (ret < 0)
 +			goto err;
-+	}
+ 	}
 +	mutex_unlock(&priv->shared_lock);
 +	ret = yt8824_soft_reset(phydev);
-+
+ 
+-err_restore_page:
+-	return phy_restore_page(phydev, old_page, ret);
 +	phydev_dbg(phydev, "%s done, phy addr: %d\n",
 +		   __func__, phydev->mdio.addr);
 +	return ret;
 +err:
 +	mutex_unlock(&priv->shared_lock);
 +	return ret;
-+}
-+
+ }
+ 
  static int yt8531_set_wol(struct phy_device *phydev,
- 			  struct ethtool_wolinfo *wol)
- {
-@@ -3073,6 +4153,426 @@ static int yt8821_resume(struct phy_devi
+@@ -3241,6 +4321,426 @@ static int yt8821_resume(struct phy_device *phydev)
  	return yt8821_modify_utp_fiber_bmcr(phydev, BMCR_PDOWN, 0);
  }
  
@@ -1666,7 +1696,7 @@ changes in v2:
  static struct phy_driver motorcomm_phy_drvs[] = {
  	{
  		PHY_ID_MATCH_EXACT(PHY_ID_YT8511),
-@@ -3159,13 +4659,29 @@ static struct phy_driver motorcomm_phy_d
+@@ -3338,13 +4838,29 @@ static struct phy_driver motorcomm_phy_drvs[] = {
  		.suspend		= yt8821_suspend,
  		.resume			= yt8821_resume,
  	},
@@ -1689,28 +1719,31 @@ changes in v2:
  
  module_phy_driver(motorcomm_phy_drvs);
  
--MODULE_DESCRIPTION("Motorcomm 8511/8521/8531/8531S/8821 PHY driver");
-+MODULE_DESCRIPTION("Motorcomm 8511/8521/8531/8531S/8821/8824 PHY driver");
+-MODULE_DESCRIPTION("Motorcomm 8511/8521/8531/8531S/861x/8821 PHY driver");
++MODULE_DESCRIPTION("Motorcomm 8511/8521/8531/8531S/861x/8821/8824 PHY driver");
  MODULE_AUTHOR("Peter Geis");
  MODULE_AUTHOR("Frank");
 +MODULE_AUTHOR("Kyle");
  MODULE_LICENSE("GPL");
  
  static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
-@@ -3175,6 +4691,7 @@ static const struct mdio_device_id __may
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531) },
+@@ -3355,6 +4871,7 @@ static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
  	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531S) },
+ 	{ PHY_ID_MATCH_EXACT(PHY_ID_INT861X) },
  	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8821) },
 +	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8824) },
  	{ /* sentinel */ }
  };
  
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index 870920311..879817fe3 100644
 --- a/drivers/net/phy/phy-c45.c
 +++ b/drivers/net/phy/phy-c45.c
-@@ -1408,6 +1408,61 @@ int genphy_c45_fast_retrain(struct phy_d
+@@ -1408,6 +1408,61 @@ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
+ }
  EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
  
- /**
++/**
 + * genphy_c45_template_testmode - configure template testmode registers
 + * @phydev: target phy_device struct
 + * @test_mode: testmode includes Normal to Test mode 7
@@ -1765,13 +1798,14 @@ changes in v2:
 +}
 +EXPORT_SYMBOL_GPL(genphy_c45_template_testmode);
 +
-+/**
+ /**
   * genphy_c45_plca_get_cfg - get PLCA configuration from standard registers
   * @phydev: target phy_device struct
-  * @plca_cfg: output structure to store the PLCA configuration
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index ddfa77753..3e7a1d911 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -2032,6 +2032,7 @@ int genphy_c45_loopback(struct phy_devic
+@@ -2374,6 +2374,7 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable, int speed);
  int genphy_c45_pma_resume(struct phy_device *phydev);
  int genphy_c45_pma_suspend(struct phy_device *phydev);
  int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable);
@@ -1779,9 +1813,11 @@ changes in v2:
  int genphy_c45_plca_get_cfg(struct phy_device *phydev,
  			    struct phy_plca_cfg *plca_cfg);
  int genphy_c45_plca_set_cfg(struct phy_device *phydev,
+diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+index 06f4bc3c2..fe339b17e 100644
 --- a/include/uapi/linux/mdio.h
 +++ b/include/uapi/linux/mdio.h
-@@ -59,6 +59,7 @@
+@@ -63,6 +63,7 @@
  /* Media-dependent registers. */
  #define MDIO_PMA_10GBT_SWAPPOL	130	/* 10GBASE-T pair swap & polarity */
  #define MDIO_PMA_10GBT_TXPWR	131	/* 10GBASE-T TX power control */
@@ -1789,7 +1825,7 @@ changes in v2:
  #define MDIO_PMA_10GBT_SNR	133	/* 10GBASE-T SNR margin, lane A.
  					 * Lanes B-D are numbered 134-136. */
  #define MDIO_PMA_10GBR_FSRT_CSR	147	/* 10GBASE-R fast retrain status and control */
-@@ -291,6 +292,17 @@
+@@ -320,6 +321,17 @@
  /* PMA 10GBASE-R Fast Retrain status and control register. */
  #define MDIO_PMA_10GBR_FSRT_ENABLE	0x0001	/* Fast retrain enable */
  
@@ -1807,13 +1843,3 @@ changes in v2:
  /* PCS 10GBASE-R/-T status register 1. */
  #define MDIO_PCS_10GBRT_STAT1_BLKLK	0x0001	/* Block lock attained */
  
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -340,6 +340,7 @@ config MICROSEMI_PHY
- 
- config MOTORCOMM_PHY
- 	tristate "Motorcomm PHYs"
-+	select PHY_PACKAGE
- 	help
- 	  Enables support for Motorcomm network PHYs.
- 	  Currently supports YT85xx Gigabit Ethernet PHYs.
