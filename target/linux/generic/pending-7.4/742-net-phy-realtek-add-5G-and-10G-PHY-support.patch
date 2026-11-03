@@ -22,8 +22,6 @@ The files which need to be provided are depending on the PHY:
 
 Signed-off-by: Balázs Triszka <info@balika011.hu>
 
-diff --git a/drivers/net/phy/realtek/Makefile b/drivers/net/phy/realtek/Makefile
-index dd21cf87f..a35e3e3c0 100644
 --- a/drivers/net/phy/realtek/Makefile
 +++ b/drivers/net/phy/realtek/Makefile
 @@ -1,4 +1,6 @@
@@ -33,9 +31,6 @@ index dd21cf87f..a35e3e3c0 100644
 +realtek-y			+= phy_patch_rtl826x.o
  realtek-$(CONFIG_REALTEK_PHY_HWMON) += realtek_hwmon.o
  obj-$(CONFIG_REALTEK_PHY)	+= realtek.o
-diff --git a/drivers/net/phy/realtek/phy_patch.c b/drivers/net/phy/realtek/phy_patch.c
-new file mode 100644
-index 000000000..5314823c7
 --- /dev/null
 +++ b/drivers/net/phy/realtek/phy_patch.c
 @@ -0,0 +1,35 @@
@@ -74,9 +69,6 @@ index 000000000..5314823c7
 +
 +	return 0;
 +}
-diff --git a/drivers/net/phy/realtek/phy_patch.h b/drivers/net/phy/realtek/phy_patch.h
-new file mode 100644
-index 000000000..dd7bd2ba8
 --- /dev/null
 +++ b/drivers/net/phy/realtek/phy_patch.h
 @@ -0,0 +1,42 @@
@@ -122,9 +114,6 @@ index 000000000..dd7bd2ba8
 +int rtlgen_phy_patch(struct phy_device *phydev);
 +
 +#endif
-diff --git a/drivers/net/phy/realtek/phy_patch_rtl826x.c b/drivers/net/phy/realtek/phy_patch_rtl826x.c
-new file mode 100644
-index 000000000..ebb126b3c
 --- /dev/null
 +++ b/drivers/net/phy/realtek/phy_patch_rtl826x.c
 @@ -0,0 +1,287 @@
@@ -415,9 +404,6 @@ index 000000000..ebb126b3c
 +
 +MODULE_FIRMWARE("rtl8261n.bin");
 +MODULE_FIRMWARE("rtl8264b.bin");
-diff --git a/drivers/net/phy/realtek/phy_patch_rtl826x.h b/drivers/net/phy/realtek/phy_patch_rtl826x.h
-new file mode 100644
-index 000000000..b38c33853
 --- /dev/null
 +++ b/drivers/net/phy/realtek/phy_patch_rtl826x.h
 @@ -0,0 +1,11 @@
@@ -432,8 +418,6 @@ index 000000000..b38c33853
 +int rtl8264b_phy_patch_db_init(struct phy_device *phydev);
 +
 +#endif
-diff --git a/drivers/net/phy/realtek/realtek.h b/drivers/net/phy/realtek/realtek.h
-index a39b44fa1..778e5b5d8 100644
 --- a/drivers/net/phy/realtek/realtek.h
 +++ b/drivers/net/phy/realtek/realtek.h
 @@ -5,6 +5,14 @@
@@ -451,8 +435,6 @@ index a39b44fa1..778e5b5d8 100644
  int rtl822x_hwmon_init(struct phy_device *phydev);
  
  #endif /* REALTEK_H */
-diff --git a/drivers/net/phy/realtek/realtek_main.c b/drivers/net/phy/realtek/realtek_main.c
-index eeb8037ef..9a6c742d1 100644
 --- a/drivers/net/phy/realtek/realtek_main.c
 +++ b/drivers/net/phy/realtek/realtek_main.c
 @@ -280,6 +280,9 @@
@@ -492,7 +474,7 @@ index eeb8037ef..9a6c742d1 100644
  MODULE_DESCRIPTION("Realtek PHY driver");
  MODULE_AUTHOR("Johnson Leung");
  MODULE_LICENSE("GPL");
-@@ -3338,6 +3361,125 @@ static int rtl8251b_c45_match_phy_device(struct phy_device *phydev,
+@@ -3338,6 +3361,125 @@ static int rtl8251b_c45_match_phy_device
  	return rtlgen_is_c45_match(phydev, RTL_8251B, true);
  }
  
@@ -618,7 +600,7 @@ index eeb8037ef..9a6c742d1 100644
  static int rtlgen_resume(struct phy_device *phydev)
  {
  	int ret = genphy_resume(phydev);
-@@ -3588,6 +3730,485 @@ static int rtl8365mb_read_status(struct phy_device *phydev)
+@@ -3588,6 +3730,485 @@ static int rtl8365mb_read_status(struct
  	return genphy_read_status(phydev);
  }
  
@@ -1104,7 +1086,7 @@ index eeb8037ef..9a6c742d1 100644
  static struct phy_driver realtek_drvs[] = {
  	{
  		PHY_ID_MATCH_EXACT(0x00008201),
-@@ -3949,6 +4570,108 @@ static struct phy_driver realtek_drvs[] = {
+@@ -3949,6 +4570,108 @@ static struct phy_driver realtek_drvs[]
  		.led_hw_control_get	= rtl8261x_led_hw_control_get,
  		.led_hw_control_set	= rtl8261x_led_hw_control_set,
  		.led_polarity_set	= rtl8261x_led_polarity_set,

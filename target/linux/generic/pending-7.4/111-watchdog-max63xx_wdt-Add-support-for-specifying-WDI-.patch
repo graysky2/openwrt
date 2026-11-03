@@ -15,8 +15,6 @@ Signed-off-by: Pali Rohár <pali@kernel.org>
  drivers/watchdog/max63xx_wdt.c | 24 ++++++++++++++++++++++++
  1 file changed, 24 insertions(+)
 
-diff --git a/drivers/watchdog/max63xx_wdt.c b/drivers/watchdog/max63xx_wdt.c
-index 17b19dfda..40a8b0bfa 100644
 --- a/drivers/watchdog/max63xx_wdt.c
 +++ b/drivers/watchdog/max63xx_wdt.c
 @@ -23,6 +23,7 @@
@@ -37,7 +35,7 @@ index 17b19dfda..40a8b0bfa 100644
  	/* WDI and WSET bits write access routines */
  	void (*ping)(struct max63xx_wdt *wdt);
  	void (*set)(struct max63xx_wdt *wdt, u8 set);
-@@ -155,6 +159,17 @@ static const struct watchdog_info max63xx_wdt_info = {
+@@ -155,6 +159,17 @@ static const struct watchdog_info max63x
  	.identity = "max63xx Watchdog",
  };
  
@@ -55,7 +53,7 @@ index 17b19dfda..40a8b0bfa 100644
  static void max63xx_mmap_ping(struct max63xx_wdt *wdt)
  {
  	u8 val;
-@@ -222,10 +237,19 @@ static int max63xx_wdt_probe(struct platform_device *pdev)
+@@ -222,10 +237,19 @@ static int max63xx_wdt_probe(struct plat
  		return -EINVAL;
  	}
  

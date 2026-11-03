@@ -38,8 +38,6 @@ u-boot> bootm 0x81800000
 
 Submitted-by: Daniel Danzberger <daniel@dd-wrt.com>
 
-diff --git a/drivers/mtd/nand/spi/Makefile b/drivers/mtd/nand/spi/Makefile
-index f6b2a094f..02c27ec2e 100644
 --- a/drivers/mtd/nand/spi/Makefile
 +++ b/drivers/mtd/nand/spi/Makefile
 @@ -1,5 +1,5 @@
@@ -49,11 +47,9 @@ index f6b2a094f..02c27ec2e 100644
 +spinand-objs += alliancememory.o ato.o dosilicon.o esmt.o etron.o fmsh.o foresee.o gigadevice.o heyangtek.o
  spinand-objs += issi.o macronix.o micron.o paragon.o skyhigh.o toshiba.o winbond.o xtx.o
  obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
-diff --git a/drivers/mtd/nand/spi/core.c b/drivers/mtd/nand/spi/core.c
-index 133776ba5..19dbcb51b 100644
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -1372,6 +1372,7 @@ static const struct spinand_manufacturer *spinand_manufacturers[] = {
+@@ -1372,6 +1372,7 @@ static const struct spinand_manufacturer
  	&dosilicon_spinand_manufacturer,
  	&esmt_8c_spinand_manufacturer,
  	&esmt_c8_spinand_manufacturer,
@@ -61,9 +57,6 @@ index 133776ba5..19dbcb51b 100644
  	&fmsh_spinand_manufacturer,
  	&foresee_spinand_manufacturer,
  	&gigadevice_spinand_manufacturer,
-diff --git a/drivers/mtd/nand/spi/etron.c b/drivers/mtd/nand/spi/etron.c
-new file mode 100644
-index 000000000..db42d3792
 --- /dev/null
 +++ b/drivers/mtd/nand/spi/etron.c
 @@ -0,0 +1,98 @@
@@ -165,11 +158,9 @@ index 000000000..db42d3792
 +	.nchips = ARRAY_SIZE(etron_spinand_table),
 +	.ops = &etron_spinand_manuf_ops,
 +};
-diff --git a/include/linux/mtd/spinand.h b/include/linux/mtd/spinand.h
-index d7c99fcfb..90d98964c 100644
 --- a/include/linux/mtd/spinand.h
 +++ b/include/linux/mtd/spinand.h
-@@ -434,6 +434,7 @@ extern const struct spinand_manufacturer ato_spinand_manufacturer;
+@@ -434,6 +434,7 @@ extern const struct spinand_manufacturer
  extern const struct spinand_manufacturer dosilicon_spinand_manufacturer;
  extern const struct spinand_manufacturer esmt_8c_spinand_manufacturer;
  extern const struct spinand_manufacturer esmt_c8_spinand_manufacturer;

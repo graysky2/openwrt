@@ -12,8 +12,6 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  scripts/link-vmlinux.sh |  4 ++++
  5 files changed, 37 insertions(+)
 
-diff --git a/init/Kconfig b/init/Kconfig
-index 4013781e0..e1d170cea 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1549,6 +1549,17 @@ config SYSFS_SYSCALL
@@ -34,11 +32,9 @@ index 4013781e0..e1d170cea 100644
  config HAVE_PCSPKR_PLATFORM
  	bool
  
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index aec2f0685..42c8e08e2 100644
 --- a/kernel/kallsyms.c
 +++ b/kernel/kallsyms.c
-@@ -69,6 +69,11 @@ static unsigned int kallsyms_expand_symbol(unsigned int off,
+@@ -69,6 +69,11 @@ static unsigned int kallsyms_expand_symb
  	 * For every byte on the compressed symbol data, copy the table
  	 * entry for that byte.
  	 */
@@ -50,7 +46,7 @@ index aec2f0685..42c8e08e2 100644
  	while (len) {
  		tptr = &kallsyms_token_table[kallsyms_token_index[*data]];
  		data++;
-@@ -101,6 +106,9 @@ static unsigned int kallsyms_expand_symbol(unsigned int off,
+@@ -101,6 +106,9 @@ tail:
   */
  static char kallsyms_get_symbol_type(unsigned int off)
  {
@@ -60,11 +56,9 @@ index aec2f0685..42c8e08e2 100644
  	/*
  	 * Get just the first code, look it up in the token table,
  	 * and return the first char from this token. If MSB of length
-diff --git a/kernel/vmcore_info.c b/kernel/vmcore_info.c
-index 7833a3606..357e35b76 100644
 --- a/kernel/vmcore_info.c
 +++ b/kernel/vmcore_info.c
-@@ -239,8 +239,10 @@ static int __init crash_save_vmcoreinfo_init(void)
+@@ -239,8 +239,10 @@ static int __init crash_save_vmcoreinfo_
  #ifdef CONFIG_KALLSYMS
  	VMCOREINFO_SYMBOL(kallsyms_names);
  	VMCOREINFO_SYMBOL(kallsyms_num_syms);
@@ -75,8 +69,6 @@ index 7833a3606..357e35b76 100644
  	VMCOREINFO_SYMBOL(kallsyms_offsets);
  #endif /* CONFIG_KALLSYMS */
  
-diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index ecb444078..4bc130dcc 100644
 --- a/scripts/kallsyms.c
 +++ b/scripts/kallsyms.c
 @@ -64,6 +64,7 @@ static struct sym_entry **table;
@@ -87,7 +79,7 @@ index ecb444078..4bc130dcc 100644
  
  /* A dynamic array of symbols, encoded by symbol index. */
  struct sym_arr {
-@@ -446,12 +447,14 @@ static void write_src(FILE *out_bin_file, const char *out_bin_name)
+@@ -446,12 +447,14 @@ static void write_src(FILE *out_bin_file
  		}
  		fwrite(table[i]->sym, 1, table[i]->len, out_bin_file);
  
@@ -108,7 +100,7 @@ index ecb444078..4bc130dcc 100644
  	}
  	write_incbin(out_bin_name, bin_start, bin_pos(out_bin_file));
  	printf(".size kallsyms_names, . - kallsyms_names\n");
-@@ -465,23 +468,25 @@ static void write_src(FILE *out_bin_file, const char *out_bin_name)
+@@ -465,23 +468,25 @@ static void write_src(FILE *out_bin_file
  
  	free(markers);
  
@@ -150,7 +142,7 @@ index ecb444078..4bc130dcc 100644
  
  	output_label("kallsyms_offsets");
  
-@@ -621,6 +626,9 @@ static unsigned char *find_token(unsigned char *str, int len,
+@@ -621,6 +626,9 @@ static unsigned char *find_token(unsigne
  {
  	int i;
  
@@ -178,8 +170,6 @@ index ecb444078..4bc130dcc 100644
  			{"sysmap",    required_argument, NULL,           's'},
  			{},
  		};
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index d5710e900..b87e4b6a6 100755
 --- a/scripts/link-vmlinux.sh
 +++ b/scripts/link-vmlinux.sh
 @@ -140,6 +140,10 @@ kallsyms()

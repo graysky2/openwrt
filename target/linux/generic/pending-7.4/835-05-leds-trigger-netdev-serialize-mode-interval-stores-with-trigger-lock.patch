@@ -57,8 +57,6 @@ v2:
  drivers/leds/trigger/ledtrig-netdev.c | 56 +++++++++++++++++++--------
  1 file changed, 39 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index b1f84014a..a503a4d64 100644
 --- a/drivers/leds/trigger/ledtrig-netdev.c
 +++ b/drivers/leds/trigger/ledtrig-netdev.c
 @@ -81,6 +81,17 @@ struct led_netdev_data {
@@ -79,7 +77,7 @@ index b1f84014a..a503a4d64 100644
  static void set_baseline_state(struct led_netdev_data *trigger_data)
  {
  	int current_brightness;
-@@ -164,10 +175,7 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
+@@ -164,10 +175,7 @@ static void set_baseline_state(struct le
  		/* If we are looking for RX/TX start periodically
  		 * checking stats
  		 */
@@ -91,7 +89,7 @@ index b1f84014a..a503a4d64 100644
  			schedule_delayed_work(&trigger_data->work, 0);
  	}
  }
-@@ -385,7 +393,7 @@ static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
+@@ -385,7 +393,7 @@ static ssize_t netdev_led_attr_store(str
  {
  	struct led_netdev_data *trigger_data = led_trigger_get_drvdata(dev);
  	struct led_classdev *led_cdev = trigger_data->led_cdev;
@@ -100,7 +98,7 @@ index b1f84014a..a503a4d64 100644
  	int ret;
  	int bit;
  
-@@ -417,6 +425,10 @@ static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
+@@ -417,6 +425,10 @@ static ssize_t netdev_led_attr_store(str
  		return -EINVAL;
  	}
  
@@ -111,7 +109,7 @@ index b1f84014a..a503a4d64 100644
  	assign_bit(bit, &mode, state);
  
  	if (test_bit(TRIGGER_NETDEV_LINK, &mode) &&
-@@ -429,20 +441,26 @@ static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
+@@ -429,20 +441,26 @@ static ssize_t netdev_led_attr_store(str
  	     test_bit(TRIGGER_NETDEV_LINK_25000, &mode) ||
  	     test_bit(TRIGGER_NETDEV_LINK_40000, &mode) ||
  	     test_bit(TRIGGER_NETDEV_LINK_50000, &mode) ||
@@ -141,7 +139,7 @@ index b1f84014a..a503a4d64 100644
  	return size;
  }
  
-@@ -494,9 +512,6 @@ static ssize_t interval_store(struct device *dev,
+@@ -494,9 +512,6 @@ static ssize_t interval_store(struct dev
  	unsigned long value;
  	int ret;
  
@@ -151,7 +149,7 @@ index b1f84014a..a503a4d64 100644
  	ret = kstrtoul(buf, 0, &value);
  	if (ret)
  		return ret;
-@@ -505,11 +520,21 @@ static ssize_t interval_store(struct device *dev,
+@@ -505,11 +520,21 @@ static ssize_t interval_store(struct dev
  	if (value < 5 || value > 10000)
  		return -EINVAL;
  
@@ -174,7 +172,7 @@ index b1f84014a..a503a4d64 100644
  	return size;
  }
  
-@@ -691,11 +716,8 @@ static void netdev_trig_work(struct work_struct *work)
+@@ -691,11 +716,8 @@ static void netdev_trig_work(struct work
  		return;
  	}
  

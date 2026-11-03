@@ -42,11 +42,9 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
  9 files changed, 127 insertions(+), 1 deletion(-)
  create mode 100644 net/bridge/br_nf_utils.c
 
-diff --git a/include/linux/netfilter.h b/include/linux/netfilter.h
-index e99afc141..be85d8f68 100644
 --- a/include/linux/netfilter.h
 +++ b/include/linux/netfilter.h
-@@ -67,6 +67,13 @@ static inline void nf_inet_addr_mask(const union nf_inet_addr *a1,
+@@ -67,6 +67,13 @@ static inline void nf_inet_addr_mask(con
  #endif
  }
  
@@ -60,8 +58,6 @@ index e99afc141..be85d8f68 100644
  int netfilter_init(void);
  
  struct sk_buff;
-diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index ebfbdb757..9f0bf8b77 100644
 --- a/include/net/netfilter/nf_flow_table.h
 +++ b/include/net/netfilter/nf_flow_table.h
 @@ -153,6 +153,9 @@ struct flow_offload_tuple {
@@ -86,11 +82,9 @@ index ebfbdb757..9f0bf8b77 100644
  		} out;
  		enum flow_offload_xmit_type	xmit_type;
  	} tuple[FLOW_OFFLOAD_DIR_MAX];
-diff --git a/net/bridge/Makefile b/net/bridge/Makefile
-index 1203dc19e..fc53c3322 100644
 --- a/net/bridge/Makefile
 +++ b/net/bridge/Makefile
-@@ -14,6 +14,8 @@ bridge-$(CONFIG_SYSFS) += br_sysfs_if.o br_sysfs_br.o
+@@ -14,6 +14,8 @@ bridge-$(CONFIG_SYSFS) += br_sysfs_if.o
  
  bridge-$(subst m,y,$(CONFIG_BRIDGE_NETFILTER)) += br_nf_core.o
  
@@ -99,8 +93,6 @@ index 1203dc19e..fc53c3322 100644
  br_netfilter-y := br_netfilter_hooks.o
  br_netfilter-$(subst m,y,$(CONFIG_IPV6)) += br_netfilter_ipv6.o
  obj-$(CONFIG_BRIDGE_NETFILTER) += br_netfilter.o
-diff --git a/net/bridge/br.c b/net/bridge/br.c
-index d9a39ff98..c0618ef6d 100644
 --- a/net/bridge/br.c
 +++ b/net/bridge/br.c
 @@ -458,6 +458,7 @@ static int __init br_init(void)
@@ -111,7 +103,7 @@ index d9a39ff98..c0618ef6d 100644
  
  #if IS_MODULE(CONFIG_BRIDGE_NETFILTER)
  	pr_info("bridge: filtering via arp/ip/ip6tables is no longer available "
-@@ -486,6 +487,7 @@ static int __init br_init(void)
+@@ -486,6 +487,7 @@ err_out:
  
  static void __exit br_deinit(void)
  {
@@ -119,9 +111,6 @@ index d9a39ff98..c0618ef6d 100644
  	stp_proto_unregister(&br_stp_proto);
  	br_netlink_fini();
  	unregister_switchdev_blocking_notifier(&br_switchdev_blocking_notifier);
-diff --git a/net/bridge/br_nf_utils.c b/net/bridge/br_nf_utils.c
-new file mode 100644
-index 000000000..300bce6c1
 --- /dev/null
 +++ b/net/bridge/br_nf_utils.c
 @@ -0,0 +1,38 @@
@@ -163,8 +152,6 @@ index 000000000..300bce6c1
 +{
 +	RCU_INIT_POINTER(nf_br_utils_hook, NULL);
 +}
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 014d0b8db..3b68f8d85 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
 @@ -2165,6 +2165,19 @@ struct nf_br_ops {
@@ -187,11 +174,9 @@ index 014d0b8db..3b68f8d85 100644
  /* br_netfilter.c */
  #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
  int br_nf_core_init(void);
-diff --git a/net/netfilter/core.c b/net/netfilter/core.c
-index 44c856c1e..92e9852c8 100644
 --- a/net/netfilter/core.c
 +++ b/net/netfilter/core.c
-@@ -814,6 +814,9 @@ static struct pernet_operations netfilter_net_ops = {
+@@ -814,6 +814,9 @@ static struct pernet_operations netfilte
  	.exit = netfilter_net_exit,
  };
  
@@ -201,8 +186,6 @@ index 44c856c1e..92e9852c8 100644
  int __init netfilter_init(void)
  {
  	int ret;
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 3e2121677..e857d1f0e 100644
 --- a/net/netfilter/nf_flow_table_core.c
 +++ b/net/netfilter/nf_flow_table_core.c
 @@ -5,6 +5,7 @@
@@ -213,7 +196,7 @@ index 3e2121677..e857d1f0e 100644
  #include <net/ip.h>
  #include <net/ip6_route.h>
  #include <net/netfilter/nf_tables.h>
-@@ -139,6 +140,9 @@ static int flow_offload_fill_route(struct flow_offload *flow,
+@@ -139,6 +140,9 @@ static int flow_offload_fill_route(struc
  		memcpy(flow_tuple->out.h_source, route->tuple[dir].out.h_source,
  		       ETH_ALEN);
  		flow_tuple->out.ifidx = route->tuple[dir].out.ifindex;
@@ -223,7 +206,7 @@ index 3e2121677..e857d1f0e 100644
  		break;
  	case FLOW_OFFLOAD_XMIT_XFRM:
  	case FLOW_OFFLOAD_XMIT_NEIGH:
-@@ -572,6 +576,43 @@ static void nf_flow_table_extend_ct_timeout(struct nf_conn *ct)
+@@ -572,6 +576,43 @@ static void nf_flow_table_extend_ct_time
  	nf_ct_put(ct);
  }
  
@@ -267,7 +250,7 @@ index 3e2121677..e857d1f0e 100644
  static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
  				    struct flow_offload *flow, void *data)
  {
-@@ -584,8 +625,8 @@ static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
+@@ -584,8 +625,8 @@ static void nf_flow_offload_gc_step(stru
  
  	if (nf_flow_has_expired(flow) ||
  	    nf_ct_is_dying(flow->ct) ||
@@ -278,8 +261,6 @@ index 3e2121677..e857d1f0e 100644
  	    nf_flow_custom_gc(flow_table, flow)) {
  		flow_offload_teardown(flow);
  		teardown = true;
-diff --git a/net/netfilter/nf_flow_table_path.c b/net/netfilter/nf_flow_table_path.c
-index 841f09943..86840ea20 100644
 --- a/net/netfilter/nf_flow_table_path.c
 +++ b/net/netfilter/nf_flow_table_path.c
 @@ -95,7 +95,10 @@ struct nft_forward_info {
@@ -294,7 +275,7 @@ index 841f09943..86840ea20 100644
  	enum flow_offload_xmit_type xmit_type;
  };
  
-@@ -107,7 +110,7 @@ static int nft_dev_path_info(struct net_device_path_stack *stack,
+@@ -107,7 +110,7 @@ static int nft_dev_path_info(struct net_
  			     unsigned char *ha, struct nft_flowtable *ft)
  {
  	const struct net_device_path *path;
@@ -303,7 +284,7 @@ index 841f09943..86840ea20 100644
  
  	memcpy(info->h_dest, ha, ETH_ALEN);
  
-@@ -149,6 +152,8 @@ static int nft_dev_path_info(struct net_device_path_stack *stack,
+@@ -149,6 +152,8 @@ static int nft_dev_path_info(struct net_
  				info->encap[info->num_encaps].proto =
  					path->encap.proto;
  				info->num_encaps++;
@@ -312,7 +293,7 @@ index 841f09943..86840ea20 100644
  			}
  			if (path->type == DEV_PATH_PPPOE) {
  				memcpy(info->h_dest, path->encap.h_dest, ETH_ALEN);
-@@ -184,6 +189,13 @@ static int nft_dev_path_info(struct net_device_path_stack *stack,
+@@ -184,6 +189,13 @@ static int nft_dev_path_info(struct net_
  			case DEV_PATH_BR_VLAN_KEEP:
  				break;
  			}
@@ -326,7 +307,7 @@ index 841f09943..86840ea20 100644
  			info->xmit_type = FLOW_OFFLOAD_XMIT_DIRECT;
  			break;
  		default:
-@@ -262,6 +274,9 @@ static int nft_dev_forward_path(const struct nft_pktinfo *pkt,
+@@ -262,6 +274,9 @@ static int nft_dev_forward_path(const st
  	if (info.xmit_type == FLOW_OFFLOAD_XMIT_DIRECT) {
  		memcpy(route->tuple[dir].out.h_source, info.h_source, ETH_ALEN);
  		memcpy(route->tuple[dir].out.h_dest, info.h_dest, ETH_ALEN);

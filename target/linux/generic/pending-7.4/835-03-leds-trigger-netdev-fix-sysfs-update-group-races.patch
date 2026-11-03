@@ -46,8 +46,6 @@ v2:
  drivers/leds/trigger/ledtrig-netdev.c | 74 +++++++++++++++++----------
  1 file changed, 47 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index e72e850e0..bf9a5ec24 100644
 --- a/drivers/leds/trigger/ledtrig-netdev.c
 +++ b/drivers/leds/trigger/ledtrig-netdev.c
 @@ -57,6 +57,8 @@
@@ -59,7 +57,7 @@ index e72e850e0..bf9a5ec24 100644
  
  	struct delayed_work work;
  	struct notifier_block notifier;
-@@ -336,8 +338,9 @@ static ssize_t device_name_store(struct device *dev,
+@@ -336,8 +338,9 @@ static ssize_t device_name_store(struct
  	if (ret < 0)
  		return ret;
  
@@ -71,7 +69,7 @@ index e72e850e0..bf9a5ec24 100644
  
  	return size;
  }
-@@ -544,22 +547,23 @@ static umode_t netdev_trig_link_speed_visible(struct kobject *kobj,
+@@ -544,22 +547,23 @@ static umode_t netdev_trig_link_speed_vi
  	 * Stop at the first matching entry as we care only to check if a particular
  	 * speed is supported and not the kind.
  	 */
@@ -111,7 +109,7 @@ index e72e850e0..bf9a5ec24 100644
  
  	return 0;
  }
-@@ -603,7 +607,6 @@ static const struct attribute_group netdev_trig_attrs_group = {
+@@ -603,7 +607,6 @@ static const struct attribute_group netd
  
  static const struct attribute_group *netdev_trig_groups[] = {
  	&netdev_trig_attrs_group,
@@ -119,7 +117,7 @@ index e72e850e0..bf9a5ec24 100644
  	NULL,
  };
  
-@@ -651,10 +654,6 @@ static int netdev_trig_notify(struct notifier_block *nb,
+@@ -651,10 +654,6 @@ static int netdev_trig_notify(struct not
  		fallthrough;
  	case NETDEV_CHANGE:
  		get_device_state(trigger_data);
@@ -130,7 +128,7 @@ index e72e850e0..bf9a5ec24 100644
  		break;
  	}
  
-@@ -662,6 +661,12 @@ static int netdev_trig_notify(struct notifier_block *nb,
+@@ -662,6 +661,12 @@ static int netdev_trig_notify(struct not
  
  	mutex_unlock(&trigger_data->lock);
  
@@ -143,7 +141,7 @@ index e72e850e0..bf9a5ec24 100644
  	return NOTIFY_DONE;
  }
  
-@@ -749,6 +754,7 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
+@@ -749,6 +754,7 @@ static int netdev_trig_activate(struct l
  		return -ENOMEM;
  
  	mutex_init(&trigger_data->lock);
@@ -151,7 +149,7 @@ index e72e850e0..bf9a5ec24 100644
  
  	trigger_data->notifier.notifier_call = netdev_trig_notify;
  	trigger_data->notifier.priority = 10;
-@@ -782,12 +788,23 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
+@@ -782,12 +788,23 @@ static int netdev_trig_activate(struct l
  
  	led_set_trigger_data(led_cdev, trigger_data);
  
@@ -167,9 +165,9 @@ index e72e850e0..bf9a5ec24 100644
 -	}
 +	if (rc)
 +		goto err_remove_group;
-+
-+	return 0;
  
++	return 0;
++
 +err_remove_group:
 +	sysfs_remove_group(&led_cdev->dev->kobj,
 +			   &netdev_trig_link_speed_attrs_group);
@@ -179,7 +177,7 @@ index e72e850e0..bf9a5ec24 100644
  	return rc;
  }
  
-@@ -797,6 +814,9 @@ static void netdev_trig_deactivate(struct led_classdev *led_cdev)
+@@ -797,6 +814,9 @@ static void netdev_trig_deactivate(struc
  
  	unregister_netdevice_notifier(&trigger_data->notifier);
  

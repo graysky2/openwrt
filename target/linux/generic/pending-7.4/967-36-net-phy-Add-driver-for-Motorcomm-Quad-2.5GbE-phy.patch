@@ -95,8 +95,6 @@ changes in v2:
  include/uapi/linux/mdio.h   |   12 +
  4 files changed, 1588 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index bf7c2c50c..540d8da98 100644
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
 @@ -361,6 +361,7 @@ config MICROSEMI_PHY
@@ -107,8 +105,6 @@ index bf7c2c50c..540d8da98 100644
  	help
  	  Enables support for Motorcomm network PHYs.
  	  Currently supports YT85xx Gigabit Ethernet PHYs, YT861x PHYs
-diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-index 46a26b76d..bf287f4b5 100644
 --- a/drivers/net/phy/motorcomm.c
 +++ b/drivers/net/phy/motorcomm.c
 @@ -1,9 +1,10 @@
@@ -194,11 +190,10 @@ index 46a26b76d..bf287f4b5 100644
  /**
   * ytphy_read_ext() - read a PHY's extended register
   * @phydev: a pointer to a &struct phy_device
-@@ -454,6 +488,70 @@ static int ytphy_read_ext_with_lock(struct phy_device *phydev, u16 regnum)
- 	return ret;
+@@ -455,6 +489,70 @@ static int ytphy_read_ext_with_lock(stru
  }
  
-+/**
+ /**
 + * ytphy_read_top_ext() - read a PHY's top extended register for YT8824
 + * @phydev: a pointer to a &struct phy_device
 + * @regnum: register number to read
@@ -262,27 +257,14 @@ index 46a26b76d..bf287f4b5 100644
 +	return ret;
 +}
 +
- /**
++/**
   * ytphy_write_ext() - write a PHY's extended register
   * @phydev: a pointer to a &struct phy_device
-@@ -639,15 +737,997 @@ static int ytphy_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
- 		mask = YTPHY_WCR_ENABLE | YTPHY_WCR_INTR_SEL;
- 		ret = ytphy_modify_ext(phydev, YTPHY_WOL_CONFIG_REG, mask, 0);
+  * @regnum: register number to write
+@@ -650,6 +748,988 @@ err_restore_page:
+ 	return phy_restore_page(phydev, old_page, ret);
+ }
  
--		/* Disable WOL interrupt */
--		ret = __phy_modify(phydev, YTPHY_INTERRUPT_ENABLE_REG,
--				   YTPHY_IER_WOL, 0);
-+		/* Disable WOL interrupt */
-+		ret = __phy_modify(phydev, YTPHY_INTERRUPT_ENABLE_REG,
-+				   YTPHY_IER_WOL, 0);
-+		if (ret < 0)
-+			goto err_restore_page;
-+	}
-+
-+err_restore_page:
-+	return phy_restore_page(phydev, old_page, ret);
-+}
-+
 +/**
 + * yt8824_read_page() - read PHY8824 reg page
 + * @phydev: a pointer to a &struct phy_device
@@ -1244,8 +1226,7 @@ index 46a26b76d..bf287f4b5 100644
 +	mutex_lock(&priv->shared_lock);
 +	if (priv->interface_mode == PHY_INTERFACE_MODE_INTERNAL) {
 +		ret = yt8824_internal_config_init_paged(phydev);
- 		if (ret < 0)
--			goto err_restore_page;
++		if (ret < 0)
 +			goto err;
 +	} else {
 +		ret = yt8824_extern_config_sds_init_paged(phydev);
@@ -1254,22 +1235,22 @@ index 46a26b76d..bf287f4b5 100644
 +		ret = yt8824_extern_config_utp_init_paged(phydev);
 +		if (ret < 0)
 +			goto err;
- 	}
++	}
 +	mutex_unlock(&priv->shared_lock);
 +	ret = yt8824_soft_reset(phydev);
- 
--err_restore_page:
--	return phy_restore_page(phydev, old_page, ret);
++
 +	phydev_dbg(phydev, "%s done, phy addr: %d\n",
 +		   __func__, phydev->mdio.addr);
 +	return ret;
 +err:
 +	mutex_unlock(&priv->shared_lock);
 +	return ret;
- }
- 
++}
++
  static int yt8531_set_wol(struct phy_device *phydev,
-@@ -3241,6 +4321,426 @@ static int yt8821_resume(struct phy_device *phydev)
+ 			  struct ethtool_wolinfo *wol)
+ {
+@@ -3241,6 +4321,426 @@ static int yt8821_resume(struct phy_devi
  	return yt8821_modify_utp_fiber_bmcr(phydev, BMCR_PDOWN, 0);
  }
  
@@ -1696,7 +1677,7 @@ index 46a26b76d..bf287f4b5 100644
  static struct phy_driver motorcomm_phy_drvs[] = {
  	{
  		PHY_ID_MATCH_EXACT(PHY_ID_YT8511),
-@@ -3338,13 +4838,29 @@ static struct phy_driver motorcomm_phy_drvs[] = {
+@@ -3338,13 +4838,29 @@ static struct phy_driver motorcomm_phy_d
  		.suspend		= yt8821_suspend,
  		.resume			= yt8821_resume,
  	},
@@ -1727,7 +1708,7 @@ index 46a26b76d..bf287f4b5 100644
  MODULE_LICENSE("GPL");
  
  static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
-@@ -3355,6 +4871,7 @@ static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
+@@ -3355,6 +4871,7 @@ static const struct mdio_device_id __may
  	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531S) },
  	{ PHY_ID_MATCH_EXACT(PHY_ID_INT861X) },
  	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8821) },
@@ -1735,15 +1716,12 @@ index 46a26b76d..bf287f4b5 100644
  	{ /* sentinel */ }
  };
  
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index 870920311..879817fe3 100644
 --- a/drivers/net/phy/phy-c45.c
 +++ b/drivers/net/phy/phy-c45.c
-@@ -1408,6 +1408,61 @@ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
- }
+@@ -1409,6 +1409,61 @@ int genphy_c45_fast_retrain(struct phy_d
  EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
  
-+/**
+ /**
 + * genphy_c45_template_testmode - configure template testmode registers
 + * @phydev: target phy_device struct
 + * @test_mode: testmode includes Normal to Test mode 7
@@ -1798,14 +1776,13 @@ index 870920311..879817fe3 100644
 +}
 +EXPORT_SYMBOL_GPL(genphy_c45_template_testmode);
 +
- /**
++/**
   * genphy_c45_plca_get_cfg - get PLCA configuration from standard registers
   * @phydev: target phy_device struct
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index ddfa77753..3e7a1d911 100644
+  * @plca_cfg: output structure to store the PLCA configuration
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -2374,6 +2374,7 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable, int speed);
+@@ -2374,6 +2374,7 @@ int genphy_c45_loopback(struct phy_devic
  int genphy_c45_pma_resume(struct phy_device *phydev);
  int genphy_c45_pma_suspend(struct phy_device *phydev);
  int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable);
@@ -1813,8 +1790,6 @@ index ddfa77753..3e7a1d911 100644
  int genphy_c45_plca_get_cfg(struct phy_device *phydev,
  			    struct phy_plca_cfg *plca_cfg);
  int genphy_c45_plca_set_cfg(struct phy_device *phydev,
-diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
-index 06f4bc3c2..fe339b17e 100644
 --- a/include/uapi/linux/mdio.h
 +++ b/include/uapi/linux/mdio.h
 @@ -63,6 +63,7 @@

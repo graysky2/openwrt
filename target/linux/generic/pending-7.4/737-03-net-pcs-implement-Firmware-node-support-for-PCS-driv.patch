@@ -58,8 +58,6 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
  create mode 100644 include/linux/pcs/pcs-provider.h
  create mode 100644 include/linux/pcs/pcs.h
 
-diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
-index 108d47257..3d4d81c8e 100644
 --- a/drivers/net/pcs/Kconfig
 +++ b/drivers/net/pcs/Kconfig
 @@ -5,6 +5,12 @@
@@ -75,8 +73,6 @@ index 108d47257..3d4d81c8e 100644
  config PCS_XPCS
  	tristate "Synopsys DesignWare Ethernet XPCS"
  	select PHYLINK
-diff --git a/drivers/net/pcs/Makefile b/drivers/net/pcs/Makefile
-index f9f6cf257..03fd8ffba 100644
 --- a/drivers/net/pcs/Makefile
 +++ b/drivers/net/pcs/Makefile
 @@ -1,6 +1,7 @@
@@ -87,9 +83,6 @@ index f9f6cf257..03fd8ffba 100644
  pcs_xpcs-$(CONFIG_PCS_XPCS)	:= pcs-xpcs.o pcs-xpcs-nxp.o pcs-xpcs-wx.o
  
  obj-$(CONFIG_PCS_XPCS)		+= pcs_xpcs.o
-diff --git a/drivers/net/pcs/pcs.c b/drivers/net/pcs/pcs.c
-new file mode 100644
-index 000000000..39550d9a1
 --- /dev/null
 +++ b/drivers/net/pcs/pcs.c
 @@ -0,0 +1,245 @@
@@ -338,9 +331,6 @@ index 000000000..39550d9a1
 +	return found;
 +}
 +EXPORT_SYMBOL_GPL(fwnode_phylink_pcs_parse);
-diff --git a/include/linux/pcs/pcs-provider.h b/include/linux/pcs/pcs-provider.h
-new file mode 100644
-index 000000000..15c198ffd
 --- /dev/null
 +++ b/include/linux/pcs/pcs-provider.h
 @@ -0,0 +1,70 @@
@@ -414,9 +404,6 @@ index 000000000..15c198ffd
 +			     void *data);
 +
 +#endif /* __LINUX_PCS_PROVIDER_H */
-diff --git a/include/linux/pcs/pcs.h b/include/linux/pcs/pcs.h
-new file mode 100644
-index 000000000..ef2134c57
 --- /dev/null
 +++ b/include/linux/pcs/pcs.h
 @@ -0,0 +1,74 @@
