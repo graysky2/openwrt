@@ -82,8 +82,10 @@ define KernelPackage/crypto-blake2b
   TITLE:=Support for BLAKE2b cryptographic hash function (RFC 7693)
   DEPENDS:=+kmod-crypto-hash
   KCONFIG:=CONFIG_CRYPTO_BLAKE2B
-  FILES:=$(LINUX_DIR)/crypto/blake2b_generic.ko
-  AUTOLOAD:=$(call AutoLoad,09,blake2b_generic)
+  FILES:=$(LINUX_DIR)/crypto/blake2b_generic.ko@lt7.3 \
+	$(LINUX_DIR)/crypto/blake2b.ko@ge7.3 \
+	$(LINUX_DIR)/lib/crypto/libblake2b.ko@ge7.3
+  AUTOLOAD:=$(call AutoLoad,09,blake2b_generic@lt7.3 blake2b@ge7.3 libblake2b@ge7.3)
   $(call AddDepends/crypto)
 endef
 
@@ -576,9 +578,10 @@ define KernelPackage/crypto-krb5
 	CONFIG_CRYPTO_KRB5ENC \
 	CONFIG_CRYPTO_KRB5_SELFTESTS=n
   FILES:= \
+	$(LINUX_DIR)/crypto/camellia_generic.ko@ge7.3 \
 	$(LINUX_DIR)/crypto/krb5enc.ko \
 	$(LINUX_DIR)/crypto/krb5/krb5.ko
-  AUTOLOAD:=$(call AutoLoad,09,krb5enc krb5)
+  AUTOLOAD:=$(call AutoLoad,09,camellia_generic@ge7.3 krb5enc krb5)
   $(call AddDepends/crypto)
 endef
 
@@ -712,8 +715,9 @@ define KernelPackage/crypto-rsa
   FILES:= \
 	$(LINUX_DIR)/lib/crypto/mpi/mpi.ko \
 	$(LINUX_DIR)/crypto/akcipher.ko \
+	$(LINUX_DIR)/crypto/sig.ko@ge7.3 \
 	$(LINUX_DIR)/crypto/rsa_generic.ko
-  AUTOLOAD:=$(call AutoLoad,10,rsa_generic)
+  AUTOLOAD:=$(call AutoLoad,10,sig@ge7.3 rsa_generic)
   $(call AddDepends/crypto)
 endef
 
@@ -797,8 +801,10 @@ define KernelPackage/crypto-sha3
   TITLE:=SHA3 digest CryptoAPI module
   DEPENDS:=+kmod-crypto-hash
   KCONFIG:= CONFIG_CRYPTO_SHA3
-  FILES:=$(LINUX_DIR)/crypto/sha3_generic.ko
-  AUTOLOAD:=$(call AutoLoad,09,sha3_generic)
+  FILES:=$(LINUX_DIR)/crypto/sha3_generic.ko@lt7.3 \
+	$(LINUX_DIR)/crypto/sha3.ko@ge7.3 \
+	$(LINUX_DIR)/lib/crypto/libsha3.ko@ge7.3
+  AUTOLOAD:=$(call AutoLoad,09,sha3_generic@lt7.3 sha3@ge7.3 libsha3@ge7.3)
   $(call AddDepends/crypto)
 endef
 
