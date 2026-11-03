@@ -206,8 +206,9 @@ define KernelPackage/libphy
 	   CONFIG_PHYLIB_LEDS=y \
 	   CONFIG_MDIO_BUS
   FILES:=$(LINUX_DIR)/drivers/net/phy/libphy.ko \
-    $(LINUX_DIR)/drivers/net/phy/mdio-bus.ko
-  AUTOLOAD:=$(call AutoLoad,15,libphy mdio-bus,1)
+    $(LINUX_DIR)/drivers/net/phy/mdio-bus.ko@lt7.3 \
+    $(LINUX_DIR)/drivers/net/phy/mdio_bus.ko@ge7.3
+  AUTOLOAD:=$(call AutoLoad,15,libphy mdio-bus@lt7.3 mdio_bus@ge7.3,1)
 endef
 
 define KernelPackage/libphy/description
@@ -597,7 +598,7 @@ define KernelPackage/phy-realtek
    TITLE:=Realtek Ethernet PHY driver
    KCONFIG:=CONFIG_REALTEK_PHY \
     CONFIG_REALTEK_PHY_HWMON=y
-   DEPENDS:=+kmod-libphy +kmod-hwmon-core
+   DEPENDS:=+kmod-libphy +kmod-hwmon-core +LINUX_7_4:kmod-phy-package
    FILES:=$(LINUX_DIR)/drivers/net/phy/realtek/realtek.ko
    AUTOLOAD:=$(call AutoLoad,18,realtek,1)
 endef
