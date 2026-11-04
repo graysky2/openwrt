@@ -524,7 +524,9 @@ define KernelPackage/fs-nfs-v4
   TITLE:=NFS4 filesystem client support
   DEPENDS:=+kmod-fs-nfs
   KCONFIG:= \
-	CONFIG_NFS_V4=y
+	CONFIG_NFS_V4=y \
+	CONFIG_PNFS_BLOCK_LAYOUT=n@ge7.4 \
+	CONFIG_PNFS_SCSI_LAYOUT=n@ge7.4
   FILES:= \
 	$(LINUX_DIR)/fs/nfs/nfsv4.ko \
 	$(LINUX_DIR)/fs/nfs/flexfilelayout/nfs_layout_flexfiles.ko \
