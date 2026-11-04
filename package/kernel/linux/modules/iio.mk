@@ -351,7 +351,7 @@ $(eval $(call KernelPackage,iio-bmp280-spi))
 
 define KernelPackage/iio-dps310
   TITLE:=DPS310/DPS368/DPS422 pressure temperatur sensor
-  DEPENDS:=+kmod-regmap-i2c
+  DEPENDS:=+kmod-regmap-i2c +LINUX_7_4:kmod-industrialio-triggered-buffer
   KCONFIG:=CONFIG_DPS310
   FILES:=$(LINUX_DIR)/drivers/iio/pressure/dps310.ko
   AUTOLOAD:=$(call AutoProbe,dps310)
