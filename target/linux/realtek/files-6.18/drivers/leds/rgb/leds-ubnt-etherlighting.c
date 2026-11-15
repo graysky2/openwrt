@@ -64,6 +64,23 @@
 #define ETHERLIGHT_CMD_SET_COLOR	0x20
 #define ETHERLIGHT_CMD_COMMIT		0x1f
 
+/*
+ * Effect values for the flags byte, found by sweeping it on a USW Pro Max
+ * 16 PoE (MCU fw 1.19.4):
+ *   0x00  breathing, Ubiquiti's name: ports fade out of phase and the
+ *         brightness drifts across the panel
+ *   0x01  all lit ports pulse dim-bright-dim in sync, 1 s period
+ *   0x02  same, 2 s period
+ *   0x03  same, 3 s period
+ *   0x08  static
+ * 0x04-0x07 and 0x09-0x0f look static, and any of the upper four bits turns
+ * the LED off. Activity blinking from the switch ASIC is overlaid in every
+ * lit mode.
+ */
+#define ETHERLIGHT_FLAGS_BREATHING	0x00
+#define ETHERLIGHT_FLAGS_PULSE_1S	0x01
+#define ETHERLIGHT_FLAGS_PULSE_2S	0x02
+#define ETHERLIGHT_FLAGS_PULSE_3S	0x03
 #define ETHERLIGHT_FLAGS_STATIC		0x08
 
 #define ETHERLIGHT_MAX_PORTS		26
@@ -76,6 +93,7 @@ struct etherlight_port {
 	struct led_classdev_mc mc_cdev;
 	struct mc_subled subled[ETHERLIGHT_NUM_COLORS];
 	u8 port;
+	u8 flags;
 };
 
 struct etherlight {
@@ -136,7 +154,7 @@ static int etherlight_brightness_set(struct led_classdev *cdev,
 	led_mc_calc_color_components(mc_cdev, brightness);
 	mutex_lock(&priv->lock);
 
-	ret = etherlight_write_color(priv, port->port, ETHERLIGHT_FLAGS_STATIC,
+	ret = etherlight_write_color(priv, port->port, port->flags,
 				     etherlight_scale16(mc_cdev->subled_info[0].brightness),
 				     etherlight_scale16(mc_cdev->subled_info[1].brightness),
 				     etherlight_scale16(mc_cdev->subled_info[2].brightness),
@@ -147,6 +165,72 @@ static int etherlight_brightness_set(struct led_classdev *cdev,
 	mutex_unlock(&priv->lock);
 	return ret;
 }
+
+static const struct {
+	const char *name;
+	u8 flags;
+} etherlight_effects[] = {
+	{ "static",	ETHERLIGHT_FLAGS_STATIC },
+	{ "breathing",	ETHERLIGHT_FLAGS_BREATHING },
+	{ "pulse-1s",	ETHERLIGHT_FLAGS_PULSE_1S },
+	{ "pulse-2s",	ETHERLIGHT_FLAGS_PULSE_2S },
+	{ "pulse-3s",	ETHERLIGHT_FLAGS_PULSE_3S },
+};
+
+static struct etherlight_port *etherlight_dev_to_port(struct device *dev)
+{
+	struct led_classdev *cdev = dev_get_drvdata(dev);
+
+	return container_of(lcdev_to_mccdev(cdev), struct etherlight_port, mc_cdev);
+}
+
+static ssize_t effect_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+{
+	struct etherlight_port *port = etherlight_dev_to_port(dev);
+	int len = 0;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(etherlight_effects); i++)
+		len += sysfs_emit_at(buf, len,
+				     etherlight_effects[i].flags == port->flags ?
+				     "[%s] " : "%s ", etherlight_effects[i].name);
+	buf[len - 1] = '\n';
+
+	return len;
+}
+
+static ssize_t effect_store(struct device *dev, struct device_attribute *attr,
+			    const char *buf, size_t size)
+{
+	struct etherlight_port *port = etherlight_dev_to_port(dev);
+	struct led_classdev *cdev = &port->mc_cdev.led_cdev;
+	int i, ret;
+
+	for (i = 0; i < ARRAY_SIZE(etherlight_effects); i++)
+		if (sysfs_streq(buf, etherlight_effects[i].name))
+			break;
+	if (i == ARRAY_SIZE(etherlight_effects))
+		return -EINVAL;
+
+	mutex_lock(&cdev->led_access);
+	port->flags = etherlight_effects[i].flags;
+	ret = etherlight_brightness_set(cdev, cdev->brightness);
+	mutex_unlock(&cdev->led_access);
+
+	return ret ? ret : size;
+}
+static DEVICE_ATTR_RW(effect);
+
+static struct attribute *etherlight_port_attrs[] = {
+	&dev_attr_effect.attr,
+	NULL
+};
+
+/* added after registration, the multicolor core overwrites led_cdev->groups */
+static const struct attribute_group etherlight_port_group = {
+	.attrs = etherlight_port_attrs,
+};
 
 static int etherlight_stop_welcome(struct etherlight *priv)
 {
@@ -233,6 +317,7 @@ static int etherlight_probe_port(struct etherlight *priv, struct device_node *np
 
 	port->priv = priv;
 	port->port = reg;
+	port->flags = ETHERLIGHT_FLAGS_STATIC;
 
 	/*
 	 * establish a known (off) baseline for this port; the actual commit
@@ -261,8 +346,12 @@ static int etherlight_probe_port(struct etherlight *priv, struct device_node *np
 	port->mc_cdev.num_colors = ETHERLIGHT_NUM_COLORS;
 	port->mc_cdev.subled_info = port->subled;
 
-	return devm_led_classdev_multicolor_register_ext(&priv->client->dev,
-							 &port->mc_cdev, &init_data);
+	ret = devm_led_classdev_multicolor_register_ext(&priv->client->dev,
+							&port->mc_cdev, &init_data);
+	if (ret)
+		return ret;
+
+	return device_add_group(port->mc_cdev.led_cdev.dev, &etherlight_port_group);
 }
 
 static int etherlight_probe(struct i2c_client *client)
