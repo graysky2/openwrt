@@ -13,6 +13,20 @@
 	model = "Ubiquiti UniFi USW Pro Max 16 PoE";
 };
 
+&gpio0 {
+	/*
+	 * Keep GPIO 21 (the touchscreen MCU's reset pin) low so the screen stays
+	 * off. Nothing in OpenWrt drives it, so otherwise it just shows "Restart
+	 * required..." forever. Remove this if a driver for the screen is ever added.
+	 */
+	lcm_reset_hog {
+		gpio-hog;
+		gpios = <21 GPIO_ACTIVE_LOW>;
+		output-high;
+		line-name = "lcm-reset";
+	};
+};
+
 &pse {
 	compatible = "ubnt,usw-pro-max-16-poe-pse", "realtek,pse-mcu-gen2-smbus";
 
